@@ -46,18 +46,16 @@ body {
   align-items: center;
   justify-content: center;
   padding: clamp(10px, 2vh, 24px) 24px;
-  gap: clamp(10px, 2.5vh, 28px);
+  gap: clamp(6px, 1.8vh, 20px);
   transition: background 0.3s, color 0.3s;
 }
 
-/* ── Controles flotantes ─────────────────────────────────────────────────── */
+/* ── Controles ───────────────────────────────────────────────────────────── */
 .top-bar {
-  position: fixed;
-  top: 16px;
-  right: 16px;
   display: flex;
   gap: 8px;
-  z-index: 10;
+  width: 100%;
+  justify-content: flex-end;
 }
 
 .ctrl-btn {
@@ -156,13 +154,13 @@ h1 {
   cursor: crosshair;
   display: block;
   touch-action: none;
-  width: min(340px, 76vmin, calc(100dvh - 290px));
-  height: min(340px, 76vmin, calc(100dvh - 290px));
+  width: min(340px, 76vmin, calc(100dvh - 340px));
+  height: min(340px, 76vmin, calc(100dvh - 340px));
 }
 
 /* ── Temporizador de ronda ───────────────────────────────────────────────── */
 .round-timer-bar {
-  width: min(340px, 76vmin, calc(100dvh - 290px));
+  width: min(340px, 76vmin, calc(100dvh - 340px));
   height: 4px;
   background: var(--bar-bg);
   border-radius: 2px;
