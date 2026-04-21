@@ -363,6 +363,9 @@ h1 {
   text-align: center;
 }
 
+.dr-grade { font-size: 4rem; font-weight: 800; line-height: 1; }
+.dr-avg   { font-size: 0.9rem; color: var(--fg-dim); letter-spacing: 2px; }
+
 .tutorial-title {
   font-size: 0.7rem;
   letter-spacing: 4px;

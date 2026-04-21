@@ -121,7 +121,10 @@ function handleAction(): void {
         const today   = getTodayKey();
         const streak  = updateStreak(today);
         const shareText = buildDailyShareText(grade, avg, game.roundResults, lang);
-        saveDailyRecord({ date: today, grade, avg, shareText });
+        saveDailyRecord({
+          date: today, grade, avg, shareText,
+          results: game.roundResults.map(r => ({ h: r.target.h, s: r.target.s, l: r.target.l, score: r.score })),
+        });
         ui.showStreak(streak);
         ui.setDailyBtn(true);
       } else {
@@ -171,16 +174,42 @@ ui.onDiffToggle(() => {
 
 ui.onDailyToggle(() => {
   const rec = getDailyRecord();
-  const alreadyToday = rec?.date === getTodayKey();
-  if (alreadyToday) {
-    // show previous result via share
-    if (navigator.share) navigator.share({ text: rec!.shareText }).catch(() => {});
-    else navigator.clipboard.writeText(rec!.shareText).catch(() => {});
+  if (rec?.date === getTodayKey()) {
+    showDailyResult(rec);
     return;
   }
   ui.setDailyBtn(false);
   restart(true);
 });
+
+function showDailyResult(rec: ReturnType<typeof getDailyRecord> & {}): void {
+  const tr     = t(lang);
+  const overlay = document.getElementById('dailyResult')!;
+  document.getElementById('drDayLabel')!.textContent = tr.dayN(getDayNumber());
+  document.getElementById('drGrade')!.textContent    = rec.grade;
+  document.getElementById('drAvg')!.textContent      = `${rec.avg} / 100`;
+  document.getElementById('drShareBtn')!.textContent = tr.share;
+  document.getElementById('drCloseBtn')!.textContent = tr.close;
+
+  const palette = document.getElementById('drPalette')!;
+  palette.innerHTML = '';
+  rec.results.forEach(r => {
+    const s = document.createElement('div');
+    s.className = 'palette-swatch' + (r.score >= 80 ? ' good' : r.score < 40 ? ' bad' : '');
+    s.style.background = `hsl(${r.h},${r.s}%,${r.l}%)`;
+    palette.appendChild(s);
+  });
+
+  overlay.hidden = false;
+
+  const close = (): void => { overlay.hidden = true; };
+  document.getElementById('drCloseBtn')!.onclick  = close;
+  overlay.onclick = (e: MouseEvent) => { if (e.target === overlay) close(); };
+  document.getElementById('drShareBtn')!.onclick = () => {
+    if (navigator.share) navigator.share({ text: rec.shareText }).catch(() => {});
+    else navigator.clipboard.writeText(rec.shareText).catch(() => {});
+  };
+}
 
 // ── Wire-up ───────────────────────────────────────────────────────────────
 

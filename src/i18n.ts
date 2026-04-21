@@ -29,6 +29,7 @@ export interface Translations {
   dailyDone:      string;
   dayN:           (n: number) => string;
   streak:         (n: number) => string;
+  close:          string;
 }
 
 const translations: Record<Lang, Translations> = {
@@ -61,6 +62,7 @@ const translations: Record<Lang, Translations> = {
     dailyDone:    'DIARIO ✓',
     dayN:         n => `Día ${n}`,
     streak:       n => `🔥 ${n}`,
+    close:        'Cerrar',
   },
   en: {
     round:        (c, total) => `Round ${c} of ${total}`,
@@ -91,6 +93,7 @@ const translations: Record<Lang, Translations> = {
     dailyDone:    'DAILY ✓',
     dayN:         n => `Day ${n}`,
     streak:       n => `🔥 ${n}`,
+    close:        'Close',
   },
 };
 
