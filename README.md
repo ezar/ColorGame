@@ -1,10 +1,15 @@
 # Color Match
 
+[![Play online](https://img.shields.io/badge/▶%20Play%20online-4ade80?style=for-the-badge&logoColor=white)](https://ezar.github.io/ColorGame/)
+[![Deploy](https://img.shields.io/github/actions/workflow/status/ezar/ColorGame/deploy.yml?branch=main&style=for-the-badge&label=deploy&logo=github)](https://github.com/ezar/ColorGame/actions/workflows/deploy.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-5-646cff?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![PWA](https://img.shields.io/badge/PWA-ready-5a0fc8?style=for-the-badge&logo=pwa&logoColor=white)](https://ezar.github.io/ColorGame/)
+
 A color perception game. Spin the wheel, match the target color as closely as you can, and see how good your eye really is.
 
 Built for my daughter, who came up with most of the ideas. Inspired by color training tools seen around the web.
-
-**Play it → [ezar.github.io/ColorGame](https://ezar.github.io/ColorGame/)**
 
 ---
 
