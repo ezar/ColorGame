@@ -43,19 +43,27 @@ body {
   overscroll-behavior: none;
   display: flex;
   flex-direction: column;
+  padding: clamp(8px, 1.5vh, 16px) 24px;
+  transition: background 0.3s, color 0.3s;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: clamp(10px, 2vh, 24px) 24px;
   gap: clamp(6px, 1.8vh, 20px);
-  transition: background 0.3s, color 0.3s;
+  overflow: hidden;
 }
 
 /* ── Controles ───────────────────────────────────────────────────────────── */
 .top-bar {
   display: flex;
   gap: 8px;
-  width: 100%;
   justify-content: flex-end;
+  flex-shrink: 0;
+  padding-bottom: clamp(4px, 1vh, 10px);
 }
 
 .ctrl-btn {
@@ -265,15 +273,16 @@ h1 {
 }
 
 .final-best {
-  font-size: 0.75rem;
-  letter-spacing: 2px;
-  color: var(--fg-dim);
-  text-transform: uppercase;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  color: var(--fg);
+  font-weight: 600;
 }
 
 .final-best.record {
-  color: var(--fg);
-  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
 
 /* ── Footer ──────────────────────────────────────────────────────────────── */

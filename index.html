@@ -19,50 +19,54 @@
     <button class="ctrl-btn" id="diffBtn">EASY</button>
   </div>
 
-  <h1>Color Match</h1>
+  <main>
 
-  <div class="info-bar" id="infoBar">
-    <span id="roundLabel">Round 1 of 5</span>
-    <span id="avgScore">Avg: —</span>
-  </div>
+    <h1>Color Match</h1>
 
-  <div class="swatches" id="swatches">
-    <div class="swatch-group">
-      <div class="swatch" id="targetSwatch"></div>
-      <div class="target-timer-bar"><div class="target-timer-fill" id="timerFill"></div></div>
-      <div class="swatch-label" id="targetLabel">Target</div>
+    <div class="info-bar" id="infoBar">
+      <span id="roundLabel">Round 1 of 5</span>
+      <span id="avgScore">Avg: —</span>
     </div>
 
-    <div class="score-display" id="scoreDisplay">
-      <div class="score-label" id="accuracyLabel">Accuracy</div>
-      <div class="score-number" id="scoreNumber">—</div>
-      <div class="score-bar">
-        <div class="score-bar-fill" id="scoreBarFill"></div>
+    <div class="swatches" id="swatches">
+      <div class="swatch-group">
+        <div class="swatch" id="targetSwatch"></div>
+        <div class="target-timer-bar"><div class="target-timer-fill" id="timerFill"></div></div>
+        <div class="swatch-label" id="targetLabel">Target</div>
+      </div>
+
+      <div class="score-display" id="scoreDisplay">
+        <div class="score-label" id="accuracyLabel">Accuracy</div>
+        <div class="score-number" id="scoreNumber">—</div>
+        <div class="score-bar">
+          <div class="score-bar-fill" id="scoreBarFill"></div>
+        </div>
+      </div>
+
+      <div class="swatch-group">
+        <div class="swatch" id="pickedSwatch"></div>
+        <div class="swatch-label" id="pickedLabel">Your color</div>
       </div>
     </div>
 
-    <div class="swatch-group">
-      <div class="swatch" id="pickedSwatch"></div>
-      <div class="swatch-label" id="pickedLabel">Your color</div>
+    <canvas id="wheelCanvas" width="340" height="340"></canvas>
+
+    <div class="round-timer-bar"><div class="round-timer-fill" id="roundTimerFill"></div></div>
+
+    <button class="btn primary" id="actionBtn">Confirm</button>
+
+    <div id="finalScreen">
+      <div class="score-label" id="finalScoreLabel">Final score</div>
+      <div class="grade" id="finalGrade"></div>
+      <div class="final-avg" id="finalAvg"></div>
+      <div class="final-best" id="finalBest"></div>
+      <div style="display:flex;gap:12px;margin-top:8px">
+        <button class="btn primary" id="restartBtn">Play again</button>
+        <button class="btn" id="shareBtn">Share</button>
+      </div>
     </div>
-  </div>
 
-  <canvas id="wheelCanvas" width="340" height="340"></canvas>
-
-  <div class="round-timer-bar"><div class="round-timer-fill" id="roundTimerFill"></div></div>
-
-  <button class="btn primary" id="actionBtn">Confirm</button>
-
-  <div id="finalScreen">
-    <div class="score-label" id="finalScoreLabel">Final score</div>
-    <div class="grade" id="finalGrade"></div>
-    <div class="final-avg" id="finalAvg"></div>
-    <div class="final-best" id="finalBest"></div>
-    <div style="display:flex;gap:12px;margin-top:8px">
-      <button class="btn primary" id="restartBtn">Play again</button>
-      <button class="btn" id="shareBtn">Share</button>
-    </div>
-  </div>
+  </main>
 
   <footer id="footer"></footer>
 
