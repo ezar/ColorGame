@@ -19,6 +19,7 @@ export interface Translations {
   easy:           string;
   hard:           string;
   history:        string;
+  itWas:          (name: string) => string;
 }
 
 const translations: Record<Lang, Translations> = {
@@ -41,6 +42,7 @@ const translations: Record<Lang, Translations> = {
     easy:         'FÁCIL',
     hard:         'DIFÍCIL',
     history:      'Últimas partidas',
+    itWas:        n => `Era ${n}`,
   },
   en: {
     round:        (c, total) => `Round ${c} of ${total}`,
@@ -61,6 +63,7 @@ const translations: Record<Lang, Translations> = {
     easy:         'EASY',
     hard:         'HARD',
     history:      'Last games',
+    itWas:        n => `It was ${n}`,
   },
 };
 

@@ -1,6 +1,7 @@
 import type { HslColor, RoundResult } from './types';
 import { hslString } from './color';
 import { type Lang, t } from './i18n';
+import { nearestColorName } from './colornames';
 
 function el<T extends HTMLElement>(id: string): T {
   const elem = document.getElementById(id);
@@ -18,6 +19,7 @@ export class UI {
   private readonly scoreDisplay  = el('scoreDisplay');
   private readonly scoreNumber   = el('scoreNumber');
   private readonly scoreBarFill  = el('scoreBarFill');
+  private readonly colorName     = el('colorName');
   private readonly avgScore      = el('avgScore');
   private readonly roundLabel    = el('roundLabel');
   private readonly actionBtn     = el<HTMLButtonElement>('actionBtn');
@@ -122,6 +124,7 @@ export class UI {
     this.pickedSwatch.style.background = 'var(--swatch-empty)';
     this.scoreDisplay.style.display    = 'none';
     this.scoreBarFill.style.width      = '0%';
+    this.colorName.textContent         = '';
     this.actionBtn.textContent         = t(this.lang).confirm;
 
     this.infoBar.style.display     = 'flex';
@@ -139,6 +142,7 @@ export class UI {
     this.pickedSwatch.style.background = hslString(result.picked);
     this.scoreDisplay.style.display    = 'flex';
     this.scoreNumber.textContent       = String(result.score);
+    this.colorName.textContent         = t(this.lang).itWas(nearestColorName(result.target, this.lang));
     setTimeout(() => { this.scoreBarFill.style.width = `${result.score}%`; }, 30);
     this.actionBtn.textContent = this.actionBtnText();
   }

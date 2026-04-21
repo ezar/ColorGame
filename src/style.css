@@ -243,6 +243,14 @@ h1 {
   overflow: hidden;
 }
 
+.color-name {
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  min-height: 1em;
+}
+
 .score-bar-fill {
   height: 100%;
   background: var(--fg);
