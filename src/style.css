@@ -79,6 +79,10 @@ body {
   border-color: var(--border-hover);
 }
 
+.ctrl-btn.diff-hard {
+  border-color: var(--border-hover);
+}
+
 /* ── Título ──────────────────────────────────────────────────────────────── */
 h1 {
   font-size: 1.4rem;
@@ -116,7 +120,7 @@ h1 {
   height: clamp(72px, 18vmin, 130px);
   border-radius: clamp(8px, 2vmin, 14px);
   background: var(--swatch-empty);
-  transition: background 0.15s;
+  transition: background 0.15s, opacity 0.4s ease;
   outline: 1.5px solid var(--border);
 }
 
@@ -125,6 +129,26 @@ h1 {
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--fg-dim);
+}
+
+.swatch.faded {
+  opacity: 0.12;
+  transition: opacity 0.4s ease;
+}
+
+.target-timer-bar {
+  width: 100%;
+  height: 3px;
+  background: var(--bar-bg);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.target-timer-fill {
+  height: 100%;
+  background: var(--fg);
+  border-radius: 2px;
+  width: 0%;
 }
 
 /* ── Rueda ───────────────────────────────────────────────────────────────── */

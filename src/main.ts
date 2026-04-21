@@ -23,20 +23,35 @@ const wheel  = new ColorWheel(canvas);
 const game   = new Game({ totalRounds: 5 });
 const ui     = new UI();
 
-let theme: 'dark' | 'light' = 'dark';
-let lang: Lang = 'en';
+let theme: 'dark' | 'light'  = 'dark';
+let lang:  Lang               = 'en';
+let diff:  'easy' | 'hard'   = 'easy';
+let hideTimer: ReturnType<typeof setTimeout> | null = null;
+
+const HIDE_DELAY = 3000;
 
 // ── Game flow ─────────────────────────────────────────────────────────────
 
+function clearHideTimer(): void {
+  if (hideTimer !== null) { clearTimeout(hideTimer); hideTimer = null; }
+}
+
 function beginRound(): void {
+  clearHideTimer();
   const avg = game.roundResults.length > 0 ? game.averageScore : undefined;
   ui.showRound();
   ui.setTargetColor(game.currentTarget);
   ui.updateRoundInfo(game.currentRound, game.totalRounds, avg);
+
+  if (diff === 'hard') {
+    ui.startTimerBar(HIDE_DELAY);
+    hideTimer = setTimeout(() => ui.fadeTargetColor(), HIDE_DELAY);
+  }
 }
 
 function handleAction(): void {
   if (game.currentPhase === 'playing') {
+    clearHideTimer();
     const result = game.confirmPick(wheel.getColor());
     wheel.lock();
     ui.showRoundScore(result, game.isLastRound());
@@ -47,9 +62,9 @@ function handleAction(): void {
   if (game.currentPhase === 'scored') {
     if (game.isLastRound()) {
       game.advance();
-      const avg       = game.averageScore;
-      const isNewRec  = saveHighscore(avg);
-      const best      = getHighscore() ?? avg;
+      const avg      = game.averageScore;
+      const isNewRec = saveHighscore(avg);
+      const best     = getHighscore() ?? avg;
       ui.showFinalScreen(game.finalGrade, avg, best, isNewRec);
     } else {
       game.advance();
@@ -60,13 +75,14 @@ function handleAction(): void {
 }
 
 function restart(): void {
+  clearHideTimer();
   game.reset();
   game.startRound();
   wheel.reset();
   beginRound();
 }
 
-// ── Theme & language ──────────────────────────────────────────────────────
+// ── Theme, language & difficulty ──────────────────────────────────────────
 
 ui.onThemeToggle(() => {
   theme = theme === 'dark' ? 'light' : 'dark';
@@ -76,6 +92,12 @@ ui.onThemeToggle(() => {
 ui.onLangToggle(() => {
   lang = lang === 'es' ? 'en' : 'es';
   ui.setLang(lang);
+});
+
+ui.onDiffToggle(() => {
+  diff = diff === 'easy' ? 'hard' : 'easy';
+  ui.setDiff(diff);
+  restart();
 });
 
 // ── Wire-up ───────────────────────────────────────────────────────────────
@@ -93,6 +115,7 @@ ui.onShare(() => {
   }
 });
 
+ui.setDiff(diff);
 game.startRound();
 wheel.reset();
 beginRound();

@@ -28,6 +28,8 @@ export class UI {
   private readonly wheelCanvas   = el<HTMLCanvasElement>('wheelCanvas');
   private readonly themeBtn      = el<HTMLButtonElement>('themeBtn');
   private readonly langBtn       = el<HTMLButtonElement>('langBtn');
+  private readonly diffBtn       = el<HTMLButtonElement>('diffBtn');
+  private readonly timerFill     = el('timerFill');
   private readonly targetLabel   = el('targetLabel');
   private readonly pickedLabel   = el('pickedLabel');
   private readonly accuracyLabel = el('accuracyLabel');
@@ -47,6 +49,35 @@ export class UI {
 
   setTargetColor(color: HslColor): void {
     this.targetSwatch.style.background = hslString(color);
+    this.targetSwatch.classList.remove('faded');
+  }
+
+  fadeTargetColor(): void {
+    this.targetSwatch.classList.add('faded');
+  }
+
+  revealTargetColor(color: HslColor): void {
+    this.targetSwatch.style.background = hslString(color);
+    this.targetSwatch.classList.remove('faded');
+  }
+
+  // ── Timer bar (hard mode) ────────────────────────────────────────────────
+
+  startTimerBar(durationMs: number): void {
+    this.timerFill.style.transition = 'none';
+    this.timerFill.style.width      = '100%';
+    // next frame: animate drain
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.timerFill.style.transition = `width ${durationMs}ms linear`;
+        this.timerFill.style.width      = '0%';
+      });
+    });
+  }
+
+  stopTimerBar(): void {
+    this.timerFill.style.transition = 'none';
+    this.timerFill.style.width      = '0%';
   }
 
   // ── Round info ──────────────────────────────────────────────────────────
@@ -81,6 +112,8 @@ export class UI {
 
   showRoundScore(result: RoundResult, isLastRound: boolean): void {
     this.actionState = isLastRound ? 'seeResult' : 'nextRound';
+    this.revealTargetColor(result.target);
+    this.stopTimerBar();
     this.pickedSwatch.style.background = hslString(result.picked);
     this.scoreDisplay.style.display    = 'flex';
     this.scoreNumber.textContent       = String(result.score);
@@ -104,7 +137,7 @@ export class UI {
     this.finalBest.classList.toggle('record', isNewRecord);
   }
 
-  // ── Theme & language ────────────────────────────────────────────────────
+  // ── Theme, language & difficulty ────────────────────────────────────────
 
   setTheme(theme: 'dark' | 'light'): void {
     document.body.classList.toggle('light', theme === 'light');
@@ -122,6 +155,15 @@ export class UI {
     this.shareBtn.textContent      = t(lang).share;
     this.actionBtn.textContent     = this.actionBtnText();
     this.renderRoundInfo();
+    // re-render diff button with new lang
+    const isDiff = this.diffBtn.dataset.diff as 'easy' | 'hard' | undefined;
+    if (isDiff) this.setDiff(isDiff);
+  }
+
+  setDiff(diff: 'easy' | 'hard'): void {
+    this.diffBtn.dataset.diff     = diff;
+    this.diffBtn.textContent      = t(this.lang)[diff];
+    this.diffBtn.classList.toggle('diff-hard', diff === 'hard');
   }
 
   // ── Events ──────────────────────────────────────────────────────────────
@@ -144,6 +186,10 @@ export class UI {
 
   onLangToggle(handler: () => void): void {
     this.langBtn.addEventListener('click', handler);
+  }
+
+  onDiffToggle(handler: () => void): void {
+    this.diffBtn.addEventListener('click', handler);
   }
 
   // ── Private ─────────────────────────────────────────────────────────────
