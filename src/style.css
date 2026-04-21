@@ -245,8 +245,15 @@ h1 {
   transition: color 0.3s;
 }
 
-.score-number.high { color: #4ade80; }
-.score-number.low  { color: #f87171; }
+.score-number.high    { color: #4ade80; }
+.score-number.low     { color: #f87171; }
+.score-number.perfect { color: #fbbf24; animation: perfect-glow 0.6s ease forwards; }
+
+@keyframes perfect-glow {
+  0%   { text-shadow: 0 0 0px #fbbf24; }
+  50%  { text-shadow: 0 0 24px #fbbf24, 0 0 48px #f59e0b; }
+  100% { text-shadow: 0 0 8px #fbbf24; }
+}
 
 .score-bar {
   width: 100%;

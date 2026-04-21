@@ -130,7 +130,7 @@ export class UI {
     this.scoreDisplay.style.display    = 'none';
     this.scoreBarFill.style.width      = '0%';
     this.colorName.textContent = '';
-    this.scoreNumber.classList.remove('high', 'low');
+    this.scoreNumber.classList.remove('high', 'low', 'perfect');
     this.actionBtn.textContent         = t(this.lang).confirm;
 
     this.infoBar.style.display     = 'flex';
@@ -148,8 +148,9 @@ export class UI {
     this.pickedSwatch.style.background = hslString(result.picked);
     this.scoreDisplay.style.display    = 'flex';
     this.scoreNumber.textContent = String(result.score);
-    this.scoreNumber.classList.toggle('high', result.score >= 80);
-    this.scoreNumber.classList.toggle('low',  result.score < 40);
+    this.scoreNumber.classList.toggle('perfect', result.score === 100);
+    this.scoreNumber.classList.toggle('high',    result.score >= 80 && result.score < 100);
+    this.scoreNumber.classList.toggle('low',     result.score < 40);
     this.colorName.textContent = t(this.lang).itWas(nearestColorName(result.target, this.lang));
     setTimeout(() => { this.scoreBarFill.style.width = `${result.score}%`; }, 30);
     this.actionBtn.textContent = this.actionBtnText();

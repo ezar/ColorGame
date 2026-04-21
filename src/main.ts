@@ -4,8 +4,8 @@ import { Game } from './game';
 import { UI } from './ui';
 import { type Lang, t } from './i18n';
 import { getHighscore, saveHighscore, pushHistory, getDailyRecord, saveDailyRecord, getStreak, updateStreak } from './storage';
-import { playConfirm, playScoreHigh, playScoreLow } from './audio';
-import { launchConfetti } from './confetti';
+import { playConfirm, playScoreHigh, playScoreLow, playPerfect } from './audio';
+import { launchConfetti, burstSparkles } from './confetti';
 import { maybeShowTutorial } from './tutorial';
 import { getDailyTargets, getTodayKey, getDayNumber, buildDailyShareText } from './daily';
 
@@ -84,9 +84,17 @@ function confirmPick(): void {
   wheel.lock();
   playConfirm();
   ui.showRoundScore(result, game.isLastRound());
-  if (result.score >= 80)      { playScoreHigh(); navigator.vibrate?.([30, 60, 60]); }
-  else if (result.score < 40)  { playScoreLow();  navigator.vibrate?.(80); }
-  else                         {                  navigator.vibrate?.(30); }
+  if (result.score === 100) {
+    playPerfect();
+    navigator.vibrate?.([40, 30, 40, 30, 80]);
+    burstSparkles(document.getElementById('scoreNumber')!);
+  } else if (result.score >= 80) {
+    playScoreHigh(); navigator.vibrate?.([30, 60, 60]);
+  } else if (result.score < 40) {
+    playScoreLow();  navigator.vibrate?.(80);
+  } else {
+    navigator.vibrate?.(30);
+  }
   ui.updateRoundInfo(game.currentRound, game.totalRounds, game.averageScore);
 }
 

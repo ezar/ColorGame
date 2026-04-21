@@ -43,3 +43,20 @@ export function playScoreHigh(): void {
 export function playScoreLow(): void {
   beep(220, 'sine', 0.25, 0.15);
 }
+
+export function playPerfect(): void {
+  // C5 – E5 – G5 – C6 ascending arpeggio
+  const ac = getCtx();
+  const t  = ac.currentTime;
+  [523, 659, 784, 1047].forEach((f, i) => {
+    const osc = ac.createOscillator();
+    const env = ac.createGain();
+    osc.connect(env); env.connect(ac.destination);
+    osc.type = 'sine';
+    osc.frequency.value = f;
+    const s = t + i * 0.09;
+    env.gain.setValueAtTime(0.22, s);
+    env.gain.exponentialRampToValueAtTime(0.001, s + 0.22);
+    osc.start(s); osc.stop(s + 0.22);
+  });
+}
