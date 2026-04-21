@@ -170,13 +170,20 @@ export class UI {
   }
 
   showHistory(history: number[]): void {
+    const SLOTS = 10;
     this.historyChart.innerHTML = '';
-    history.forEach((score, i) => {
-      const bar = document.createElement('div');
-      bar.className = 'h-bar' + (i === history.length - 1 ? ' current' : '');
-      bar.style.height = `${score}%`;
+    for (let i = 0; i < SLOTS; i++) {
+      const offset   = i - (SLOTS - history.length);
+      const bar      = document.createElement('div');
+      const isCurrent = offset === history.length - 1;
+      if (offset < 0) {
+        bar.className = 'h-bar h-bar-empty';
+      } else {
+        bar.className = 'h-bar' + (isCurrent ? ' current' : '');
+        bar.style.height = `${history[offset]}%`;
+      }
       this.historyChart.appendChild(bar);
-    });
+    }
   }
 
   setLang(lang: Lang): void {
