@@ -226,6 +226,18 @@ h1 {
   letter-spacing: 2px;
 }
 
+.final-best {
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: var(--fg-dim);
+  text-transform: uppercase;
+}
+
+.final-best.record {
+  color: var(--fg);
+  font-weight: 600;
+}
+
 /* ── Footer ──────────────────────────────────────────────────────────────── */
 footer {
   font-size: 0.6rem;

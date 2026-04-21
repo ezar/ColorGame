@@ -24,6 +24,7 @@ export class UI {
   private readonly finalScreen   = el('finalScreen');
   private readonly finalGrade    = el('finalGrade');
   private readonly finalAvg      = el('finalAvg');
+  private readonly finalBest     = el('finalBest');
   private readonly wheelCanvas   = el<HTMLCanvasElement>('wheelCanvas');
   private readonly themeBtn      = el<HTMLButtonElement>('themeBtn');
   private readonly langBtn       = el<HTMLButtonElement>('langBtn');
@@ -87,7 +88,7 @@ export class UI {
     this.actionBtn.textContent = this.actionBtnText();
   }
 
-  showFinalScreen(grade: string, avg: number): void {
+  showFinalScreen(grade: string, avg: number, best: number, isNewRecord: boolean): void {
     this.infoBar.style.display      = 'none';
     this.swatchPanel.style.display  = 'none';
     this.scoreDisplay.style.display = 'none';
@@ -96,6 +97,11 @@ export class UI {
     this.finalScreen.style.display  = 'flex';
     this.finalGrade.textContent = grade;
     this.finalAvg.textContent   = `${avg} / 100`;
+    const tr = t(this.lang);
+    this.finalBest.textContent = isNewRecord
+      ? tr.newRecord
+      : `${tr.best}: ${best}`;
+    this.finalBest.classList.toggle('record', isNewRecord);
   }
 
   // ── Theme & language ────────────────────────────────────────────────────

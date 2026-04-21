@@ -3,6 +3,7 @@ import { ColorWheel } from './wheel';
 import { Game } from './game';
 import { UI } from './ui';
 import { type Lang, t } from './i18n';
+import { getHighscore, saveHighscore } from './storage';
 
 declare const __BUILD_TIME__: number;
 ((): void => {
@@ -46,7 +47,10 @@ function handleAction(): void {
   if (game.currentPhase === 'scored') {
     if (game.isLastRound()) {
       game.advance();
-      ui.showFinalScreen(game.finalGrade, game.averageScore);
+      const avg       = game.averageScore;
+      const isNewRec  = saveHighscore(avg);
+      const best      = getHighscore() ?? avg;
+      ui.showFinalScreen(game.finalGrade, avg, best, isNewRec);
     } else {
       game.advance();
       wheel.reset();
