@@ -4,6 +4,19 @@ import { Game } from './game';
 import { UI } from './ui';
 import type { Lang } from './i18n';
 
+declare const __BUILD_TIME__: number;
+((): void => {
+  const d  = new Date(__BUILD_TIME__);
+  const yy = String(d.getFullYear()).slice(-2);
+  const M  = d.getMonth() + 1;
+  const dd = String(d.getDate()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  const v  = `${yy}.${M}.${dd}.${hh}${mm}`;
+  const footer = document.getElementById('footer');
+  if (footer) footer.textContent = `© ${d.getFullYear()} ezar · v${v}`;
+})();
+
 const canvas = document.getElementById('wheelCanvas') as HTMLCanvasElement;
 const wheel  = new ColorWheel(canvas);
 const game   = new Game({ totalRounds: 5 });

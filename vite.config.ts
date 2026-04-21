@@ -3,6 +3,9 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   base: '/ColorGame/',
+  define: {
+    __BUILD_TIME__: JSON.stringify(Date.now()),
+  },
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',
