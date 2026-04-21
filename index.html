@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Match</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #111827;
+      color: #fff;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      gap: 28px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      font-weight: 300;
+      opacity: 0.85;
+    }
+
+    .info-bar {
+      display: flex;
+      gap: 32px;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.5;
+    }
+
+    .swatches {
+      display: flex;
+      gap: 20px;
+    }
+
+    .swatch-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .swatch {
+      width: 130px;
+      height: 130px;
+      border-radius: 14px;
+      background: #1f2937;
+    }
+
+    .swatch-label {
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0.45;
+    }
+
+    #wheelCanvas {
+      cursor: none;
+      display: block;
+    }
+
+    .btn {
+      padding: 14px 48px;
+      border: 1.5px solid rgba(255,255,255,0.25);
+      background: transparent;
+      color: #fff;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      font-family: inherit;
+    }
+
+    .btn:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.5);
+    }
+
+    .btn.primary {
+      background: rgba(255,255,255,0.95);
+      color: #111827;
+      border-color: transparent;
+    }
+
+    .btn.primary:hover { background: #fff; }
+
+    .score-display {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .score-label {
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0.45;
+    }
+
+    .score-number {
+      font-size: 3.5rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .score-bar {
+      width: 260px;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      background: #fff;
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.6s ease;
+    }
+
+    #finalScreen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .grade {
+      font-size: 7rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .final-avg {
+      font-size: 1rem;
+      opacity: 0.5;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Color Match</h1>
+
+<div class="info-bar" id="infoBar">
+  <span id="roundLabel">Ronda 1 de 5</span>
+  <span id="avgScore">Media: —</span>
+</div>
+
+<div class="swatches" id="swatches">
+  <div class="swatch-group">
+    <div class="swatch" id="targetSwatch"></div>
+    <div class="swatch-label">Objetivo</div>
+  </div>
+  <div class="swatch-group">
+    <div class="swatch" id="pickedSwatch"></div>
+    <div class="swatch-label">Tu color</div>
+  </div>
+</div>
+
+<div class="score-display" id="scoreDisplay">
+  <div class="score-label">Precisión</div>
+  <div class="score-number" id="scoreNumber">—</div>
+  <div class="score-bar">
+    <div class="score-bar-fill" id="scoreBarFill"></div>
+  </div>
+</div>
+
+<canvas id="wheelCanvas" width="340" height="340"></canvas>
+
+<button class="btn primary" id="actionBtn">Confirmar</button>
+
+<div id="finalScreen">
+  <div class="score-label">Puntuación final</div>
+  <div class="grade" id="finalGrade"></div>
+  <div class="final-avg" id="finalAvg"></div>
+  <button class="btn primary" id="restartBtn" style="margin-top:8px">Jugar de nuevo</button>
+</div>
+
+<script>
+// ── Utilidades de color ───────────────────────────────────────────────────────
+
+function hslToRgb(h, s, l) {
+  s /= 100; l /= 100;
+  const k = n => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  return [Math.round(f(0)*255), Math.round(f(8)*255), Math.round(f(4)*255)];
+}
+
+function calcScore(h1, s1, h2, s2) {
+  const dh = Math.min(Math.abs(h1-h2), 360-Math.abs(h1-h2)) / 180;
+  const ds = Math.abs(s1-s2) / 100;
+  return Math.max(0, Math.round((1 - dh*0.7 - ds*0.3) * 100));
+}
+
+function calcGrade(avg) {
+  if (avg >= 95) return 'S';
+  if (avg >= 85) return 'A';
+  if (avg >= 70) return 'B';
+  if (avg >= 55) return 'C';
+  if (avg >= 40) return 'D';
+  return 'F';
+}
+
+// ── Rueda de colores ──────────────────────────────────────────────────────────
+
+const canvas = document.getElementById('wheelCanvas');
+const ctx    = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+const CX = W/2, CY = H/2, R = CX - 4;
+
+// Renderizar rueda en canvas offscreen una sola vez
+const off = document.createElement('canvas');
+off.width = W; off.height = H;
+const offCtx = off.getContext('2d');
+(function buildWheel() {
+  const img = offCtx.createImageData(W, H);
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const dx = x-CX, dy = y-CY;
+      const d = Math.sqrt(dx*dx + dy*dy);
+      if (d <= R) {
+        const hue = ((Math.atan2(dy, dx) * 180/Math.PI) + 360) % 360;
+        const sat = (d/R) * 100;
+        const [r,g,b] = hslToRgb(hue, sat, 50);
+        const i = (y*W + x)*4;
+        img.data[i]=r; img.data[i+1]=g; img.data[i+2]=b; img.data[i+3]=255;
+      }
+    }
+  }
+  offCtx.putImageData(img, 0, 0);
+})();
+
+let cursor = { x: CX, y: CY };
+
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.drawImage(off, 0, 0);
+  ctx.beginPath();
+  ctx.arc(cursor.x, cursor.y, 12, 0, Math.PI*2);
+  ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+  ctx.lineWidth = 3.5;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cursor.x, cursor.y, 12, 0, Math.PI*2);
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function clamp(x, y) {
+  const dx = x-CX, dy = y-CY;
+  const d = Math.sqrt(dx*dx + dy*dy);
+  if (d > R) {
+    const a = Math.atan2(dy, dx);
+    return { x: CX + Math.cos(a)*R, y: CY + Math.sin(a)*R };
+  }
+  return { x, y };
+}
+
+function posToHsl(x, y) {
+  const dx = x-CX, dy = y-CY;
+  return {
+    hue: ((Math.atan2(dy, dx)*180/Math.PI)+360)%360,
+    sat: Math.min(Math.sqrt(dx*dx+dy*dy), R) / R * 100
+  };
+}
+
+// ── Lógica del juego ──────────────────────────────────────────────────────────
+
+let phase  = 'playing'; // 'playing' | 'scored' | 'done'
+let round  = 0;
+const ROUNDS = 5;
+const scores = [];
+let target = {};
+
+function startRound() {
+  phase = 'playing';
+  round++;
+  target = { hue: Math.random()*360, sat: 40 + Math.random()*60 };
+  cursor = { x: CX, y: CY };
+
+  document.getElementById('roundLabel').textContent = `Ronda ${round} de ${ROUNDS}`;
+  document.getElementById('targetSwatch').style.background =
+    `hsl(${target.hue},${target.sat}%,50%)`;
+  document.getElementById('pickedSwatch').style.background = '#1f2937';
+  document.getElementById('scoreDisplay').style.display = 'none';
+  document.getElementById('scoreBarFill').style.width = '0%';
+  document.getElementById('actionBtn').textContent = 'Confirmar';
+  render();
+}
+
+function confirm() {
+  phase = 'scored';
+  const picked = posToHsl(cursor.x, cursor.y);
+  const s = calcScore(target.hue, target.sat, picked.hue, picked.sat);
+  scores.push(s);
+
+  const avg = Math.round(scores.reduce((a,b) => a+b, 0) / scores.length);
+  document.getElementById('avgScore').textContent = `Media: ${avg}`;
+  document.getElementById('pickedSwatch').style.background =
+    `hsl(${picked.hue},${picked.sat}%,50%)`;
+
+  document.getElementById('scoreDisplay').style.display = 'flex';
+  document.getElementById('scoreNumber').textContent = s;
+  setTimeout(() => {
+    document.getElementById('scoreBarFill').style.width = `${s}%`;
+  }, 30);
+
+  document.getElementById('actionBtn').textContent =
+    round >= ROUNDS ? 'Ver resultado' : 'Siguiente ronda';
+}
+
+function next() {
+  if (round >= ROUNDS) { showFinal(); return; }
+  startRound();
+}
+
+function showFinal() {
+  phase = 'done';
+  const avg = Math.round(scores.reduce((a,b) => a+b, 0) / scores.length);
+
+  document.getElementById('infoBar').style.display     = 'none';
+  document.getElementById('swatches').style.display    = 'none';
+  document.getElementById('scoreDisplay').style.display = 'none';
+  canvas.style.display = 'none';
+  document.getElementById('actionBtn').style.display   = 'none';
+
+  document.getElementById('finalScreen').style.display = 'flex';
+  document.getElementById('finalGrade').textContent    = calcGrade(avg);
+  document.getElementById('finalAvg').textContent      = `${avg} / 100`;
+}
+
+function restart() {
+  scores.length = 0;
+  round = 0;
+
+  document.getElementById('infoBar').style.display     = 'flex';
+  document.getElementById('swatches').style.display    = 'flex';
+  canvas.style.display = 'block';
+  document.getElementById('actionBtn').style.display   = 'block';
+  document.getElementById('finalScreen').style.display = 'none';
+
+  startRound();
+}
+
+// ── Entrada (ratón y táctil) ──────────────────────────────────────────────────
+
+function onPointer(e) {
+  if (phase !== 'playing') return;
+  const rect = canvas.getBoundingClientRect();
+  const sx = W / rect.width, sy = H / rect.height;
+  const cx = e.touches ? e.touches[0].clientX : e.clientX;
+  const cy = e.touches ? e.touches[0].clientY : e.clientY;
+  cursor = clamp((cx - rect.left)*sx, (cy - rect.top)*sy);
+  const { hue, sat } = posToHsl(cursor.x, cursor.y);
+  document.getElementById('pickedSwatch').style.background = `hsl(${hue},${sat}%,50%)`;
+  render();
+}
+
+canvas.addEventListener('mousemove', onPointer);
+canvas.addEventListener('touchmove',  e => { e.preventDefault(); onPointer(e); }, { passive: false });
+canvas.addEventListener('touchstart', e => { e.preventDefault(); onPointer(e); }, { passive: false });
+
+document.getElementById('actionBtn').addEventListener('click', () => {
+  if (phase === 'playing') confirm();
+  else if (phase === 'scored') next();
+});
+
+document.getElementById('restartBtn').addEventListener('click', restart);
+
+// ── Arranque ──────────────────────────────────────────────────────────────────
+startRound();
+</script>
+</body>
+</html>
