@@ -29,5 +29,9 @@ export function calcGrade(avg: number): string {
 }
 
 export function randomTarget(): HslColor {
-  return { h: Math.random() * 360, s: 40 + Math.random() * 60, l: 50 };
+  return {
+    h: Math.random() * 360,
+    s: 40 + Math.random() * 60,
+    l: 30 + Math.round(Math.random() * 40),
+  };
 }

@@ -233,7 +233,11 @@ h1 {
   font-size: 3rem;
   font-weight: 700;
   line-height: 1;
+  transition: color 0.3s;
 }
+
+.score-number.high { color: #4ade80; }
+.score-number.low  { color: #f87171; }
 
 .score-bar {
   width: 100%;

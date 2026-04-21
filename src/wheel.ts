@@ -9,6 +9,7 @@ export class ColorWheel {
   private readonly radius: number;
   private cursor: { x: number; y: number };
   private active = true;
+  private lightness = 50;
 
   constructor(private readonly canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d');
@@ -28,10 +29,16 @@ export class ColorWheel {
     this.render();
   }
 
+  setLightness(l: number): void {
+    this.lightness = l;
+    this.buildWheel();
+    this.render();
+  }
+
   private buildWheel(): void {
     const offCtx = this.offscreen.getContext('2d')!;
     const { width: W, height: H } = this.offscreen;
-    const { cx, cy, radius } = this;
+    const { cx, cy, radius, lightness } = this;
     const img = offCtx.createImageData(W, H);
 
     for (let y = 0; y < H; y++) {
@@ -42,7 +49,7 @@ export class ColorWheel {
         if (d <= radius) {
           const hue = ((Math.atan2(dy, dx) * 180 / Math.PI) + 360) % 360;
           const sat = (d / radius) * 100;
-          const [r, g, b] = hslToRgb(hue, sat, 50);
+          const [r, g, b] = hslToRgb(hue, sat, lightness);
           const i = (y * W + x) * 4;
           img.data[i]     = r;
           img.data[i + 1] = g;
@@ -84,13 +91,13 @@ export class ColorWheel {
   }
 
   getColor(): HslColor {
-    const { cursor, cx, cy, radius } = this;
+    const { cursor, cx, cy, radius, lightness } = this;
     const dx = cursor.x - cx;
     const dy = cursor.y - cy;
     return {
       h: ((Math.atan2(dy, dx) * 180 / Math.PI) + 360) % 360,
       s: Math.min(Math.sqrt(dx * dx + dy * dy), radius) / radius * 100,
-      l: 50,
+      l: lightness,
     };
   }
 

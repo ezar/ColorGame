@@ -55,6 +55,7 @@ function avgRoundTime(): number {
 function beginRound(): void {
   clearTimers();
   const avg = game.roundResults.length > 0 ? game.averageScore : undefined;
+  wheel.setLightness(game.currentTarget.l);
   ui.showRound();
   ui.setTargetColor(game.currentTarget);
   ui.updateRoundInfo(game.currentRound, game.totalRounds, avg);
