@@ -13,7 +13,7 @@ export interface Translations {
   finalScore:     string;
   playAgain:      string;
   share:          string;
-  shareText:      (grade: string, avg: number) => string;
+  shareText:      (grade: string, avg: number, avgTime: number) => string;
   best:           string;
   newRecord:      string;
   easy:           string;
@@ -34,7 +34,7 @@ const translations: Record<Lang, Translations> = {
     finalScore:   'Puntuación final',
     playAgain:    'Jugar de nuevo',
     share:        'Compartir',
-    shareText:    (g, a) => `Conseguí ${g} (${a}/100) en Color Match 🎨 ¿Puedes superarlo?`,
+    shareText:    (g, a, t) => `Conseguí ${g} (${a}/100) en ${t}s de media en Color Match 🎨 ¿Puedes superarlo?`,
     best:         'Mejor marca',
     newRecord:    '¡Nuevo récord!',
     easy:         'FÁCIL',
@@ -53,7 +53,7 @@ const translations: Record<Lang, Translations> = {
     finalScore:   'Final score',
     playAgain:    'Play again',
     share:        'Share',
-    shareText:    (g, a) => `I scored ${g} (${a}/100) on Color Match 🎨 Can you beat it?`,
+    shareText:    (g, a, t) => `I scored ${g} (${a}/100) in ${t}s avg on Color Match 🎨 Can you beat it?`,
     best:         'Best',
     newRecord:    'New record!',
     easy:         'EASY',

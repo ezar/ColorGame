@@ -160,6 +160,22 @@ h1 {
   height: min(340px, 76vmin, calc(100dvh - 290px));
 }
 
+/* ── Temporizador de ronda ───────────────────────────────────────────────── */
+.round-timer-bar {
+  width: min(340px, 76vmin, calc(100dvh - 290px));
+  height: 4px;
+  background: var(--bar-bg);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.round-timer-fill {
+  height: 100%;
+  background: var(--fg);
+  border-radius: 2px;
+  width: 0%;
+}
+
 /* ── Botones ─────────────────────────────────────────────────────────────── */
 .btn {
   padding: 14px 48px;

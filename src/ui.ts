@@ -29,7 +29,8 @@ export class UI {
   private readonly themeBtn      = el<HTMLButtonElement>('themeBtn');
   private readonly langBtn       = el<HTMLButtonElement>('langBtn');
   private readonly diffBtn       = el<HTMLButtonElement>('diffBtn');
-  private readonly timerFill     = el('timerFill');
+  private readonly timerFill       = el('timerFill');
+  private readonly roundTimerFill  = el('roundTimerFill');
   private readonly targetLabel   = el('targetLabel');
   private readonly pickedLabel   = el('pickedLabel');
   private readonly accuracyLabel = el('accuracyLabel');
@@ -80,6 +81,24 @@ export class UI {
     this.timerFill.style.width      = '0%';
   }
 
+  // ── Round timer bar ──────────────────────────────────────────────────────
+
+  startRoundTimer(durationMs: number): void {
+    this.roundTimerFill.style.transition = 'none';
+    this.roundTimerFill.style.width      = '100%';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.roundTimerFill.style.transition = `width ${durationMs}ms linear`;
+        this.roundTimerFill.style.width      = '0%';
+      });
+    });
+  }
+
+  stopRoundTimer(): void {
+    this.roundTimerFill.style.transition = 'none';
+    this.roundTimerFill.style.width      = '0%';
+  }
+
   // ── Round info ──────────────────────────────────────────────────────────
 
   updateRoundInfo(round: number, total: number, avg?: number): void {
@@ -114,6 +133,7 @@ export class UI {
     this.actionState = isLastRound ? 'seeResult' : 'nextRound';
     this.revealTargetColor(result.target);
     this.stopTimerBar();
+    this.stopRoundTimer();
     this.pickedSwatch.style.background = hslString(result.picked);
     this.scoreDisplay.style.display    = 'flex';
     this.scoreNumber.textContent       = String(result.score);

@@ -23,25 +23,43 @@ const wheel  = new ColorWheel(canvas);
 const game   = new Game({ totalRounds: 5 });
 const ui     = new UI();
 
-let theme: 'dark' | 'light'  = 'dark';
-let lang:  Lang               = 'en';
-let diff:  'easy' | 'hard'   = 'easy';
-let hideTimer: ReturnType<typeof setTimeout> | null = null;
+let theme: 'dark' | 'light' = 'dark';
+let lang:  Lang              = 'en';
+let diff:  'easy' | 'hard'  = 'easy';
 
-const HIDE_DELAY = 3000;
+const ROUND_DURATION = 10_000;
+const HIDE_DELAY     = 3_000;
+
+let hideTimer:  ReturnType<typeof setTimeout> | null = null;
+let roundTimer: ReturnType<typeof setTimeout> | null = null;
+let roundStart  = 0;
+let roundTimes: number[] = [];
+
+// ── Timer helpers ─────────────────────────────────────────────────────────
+
+function clearTimers(): void {
+  if (hideTimer  !== null) { clearTimeout(hideTimer);  hideTimer  = null; }
+  if (roundTimer !== null) { clearTimeout(roundTimer); roundTimer = null; }
+}
+
+function avgRoundTime(): number {
+  if (roundTimes.length === 0) return 0;
+  const avg = roundTimes.reduce((s, v) => s + v, 0) / roundTimes.length;
+  return Math.round(avg / 1000);
+}
 
 // ── Game flow ─────────────────────────────────────────────────────────────
 
-function clearHideTimer(): void {
-  if (hideTimer !== null) { clearTimeout(hideTimer); hideTimer = null; }
-}
-
 function beginRound(): void {
-  clearHideTimer();
+  clearTimers();
   const avg = game.roundResults.length > 0 ? game.averageScore : undefined;
   ui.showRound();
   ui.setTargetColor(game.currentTarget);
   ui.updateRoundInfo(game.currentRound, game.totalRounds, avg);
+
+  roundStart = Date.now();
+  ui.startRoundTimer(ROUND_DURATION);
+  roundTimer = setTimeout(confirmPick, ROUND_DURATION);
 
   if (diff === 'hard') {
     ui.startTimerBar(HIDE_DELAY);
@@ -49,13 +67,19 @@ function beginRound(): void {
   }
 }
 
+function confirmPick(): void {
+  if (game.currentPhase !== 'playing') return;
+  clearTimers();
+  roundTimes.push(Date.now() - roundStart);
+  const result = game.confirmPick(wheel.getColor());
+  wheel.lock();
+  ui.showRoundScore(result, game.isLastRound());
+  ui.updateRoundInfo(game.currentRound, game.totalRounds, game.averageScore);
+}
+
 function handleAction(): void {
   if (game.currentPhase === 'playing') {
-    clearHideTimer();
-    const result = game.confirmPick(wheel.getColor());
-    wheel.lock();
-    ui.showRoundScore(result, game.isLastRound());
-    ui.updateRoundInfo(game.currentRound, game.totalRounds, game.averageScore);
+    confirmPick();
     return;
   }
 
@@ -75,7 +99,8 @@ function handleAction(): void {
 }
 
 function restart(): void {
-  clearHideTimer();
+  clearTimers();
+  roundTimes = [];
   game.reset();
   game.startRound();
   wheel.reset();
@@ -106,7 +131,7 @@ wheel.onColorChange(color => ui.setPickedColor(color));
 ui.onAction(handleAction);
 ui.onRestart(restart);
 ui.onShare(() => {
-  const text = t(lang).shareText(game.finalGrade, game.averageScore);
+  const text = t(lang).shareText(game.finalGrade, game.averageScore, avgRoundTime());
   const url  = 'https://ezar.github.io/ColorGame/';
   if (navigator.share) {
     navigator.share({ text, url }).catch(() => {});
