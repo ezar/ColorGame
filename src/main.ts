@@ -77,8 +77,9 @@ function confirmPick(): void {
   wheel.lock();
   playConfirm();
   ui.showRoundScore(result, game.isLastRound());
-  if (result.score >= 80) playScoreHigh();
-  else if (result.score < 40) playScoreLow();
+  if (result.score >= 80)      { playScoreHigh(); navigator.vibrate?.([30, 60, 60]); }
+  else if (result.score < 40)  { playScoreLow();  navigator.vibrate?.(80); }
+  else                         {                  navigator.vibrate?.(30); }
   ui.updateRoundInfo(game.currentRound, game.totalRounds, game.averageScore);
 }
 
