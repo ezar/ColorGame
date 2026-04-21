@@ -25,6 +25,8 @@ export class UI {
   private readonly finalGrade    = el('finalGrade');
   private readonly finalAvg      = el('finalAvg');
   private readonly finalBest     = el('finalBest');
+  private readonly historyChart  = el('historyChart');
+  private readonly historyLabel  = el('historyLabel');
   private readonly wheelCanvas   = el<HTMLCanvasElement>('wheelCanvas');
   private readonly themeBtn      = el<HTMLButtonElement>('themeBtn');
   private readonly langBtn       = el<HTMLButtonElement>('langBtn');
@@ -167,6 +169,16 @@ export class UI {
     this.themeBtn.textContent = theme === 'dark' ? '☽' : '☀';
   }
 
+  showHistory(history: number[]): void {
+    this.historyChart.innerHTML = '';
+    history.forEach((score, i) => {
+      const bar = document.createElement('div');
+      bar.className = 'h-bar' + (i === history.length - 1 ? ' current' : '');
+      bar.style.height = `${score}%`;
+      this.historyChart.appendChild(bar);
+    });
+  }
+
   setLang(lang: Lang): void {
     this.lang = lang;
     this.langBtn.textContent       = lang === 'es' ? 'EN' : 'ES';
@@ -176,6 +188,7 @@ export class UI {
     this.finalScoreLbl.textContent = t(lang).finalScore;
     this.restartBtn.textContent    = t(lang).playAgain;
     this.shareBtn.textContent      = t(lang).share;
+    this.historyLabel.textContent  = t(lang).history;
     this.actionBtn.textContent     = this.actionBtnText();
     this.renderRoundInfo();
     // re-render diff button with new lang
