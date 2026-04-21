@@ -5,6 +5,7 @@ import { UI } from './ui';
 import { type Lang, t } from './i18n';
 import { getHighscore, saveHighscore, pushHistory } from './storage';
 import { playConfirm, playScoreHigh, playScoreLow } from './audio';
+import { launchConfetti } from './confetti';
 
 declare const __BUILD_TIME__: number;
 ((): void => {
@@ -96,6 +97,7 @@ function handleAction(): void {
       const history  = pushHistory(avg);
       ui.showFinalScreen(game.finalGrade, avg, best, isNewRec);
       ui.showHistory(history);
+      if (isNewRec) launchConfetti();
     } else {
       game.advance();
       wheel.reset();
