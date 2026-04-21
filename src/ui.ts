@@ -29,6 +29,7 @@ export class UI {
   private readonly finalBest     = el('finalBest');
   private readonly historyChart  = el('historyChart');
   private readonly historyLabel  = el('historyLabel');
+  private readonly finalPalette  = el('finalPalette');
   private readonly wheelCanvas   = el<HTMLCanvasElement>('wheelCanvas');
   private readonly themeBtn      = el<HTMLButtonElement>('themeBtn');
   private readonly langBtn       = el<HTMLButtonElement>('langBtn');
@@ -178,6 +179,17 @@ export class UI {
   setTheme(theme: 'dark' | 'light'): void {
     document.body.classList.toggle('light', theme === 'light');
     this.themeBtn.textContent = theme === 'dark' ? '☽' : '☀';
+  }
+
+  showFinalPalette(results: readonly RoundResult[]): void {
+    this.finalPalette.innerHTML = '';
+    results.forEach(r => {
+      const s = document.createElement('div');
+      s.className = 'palette-swatch'
+        + (r.score >= 80 ? ' good' : r.score < 40 ? ' bad' : '');
+      s.style.background = hslString(r.target);
+      this.finalPalette.appendChild(s);
+    });
   }
 
   showHistory(history: number[]): void {

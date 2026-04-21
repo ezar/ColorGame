@@ -55,7 +55,10 @@ main {
   justify-content: center;
   gap: clamp(6px, 1.8vh, 20px);
   overflow: hidden;
+  transition: opacity 0.15s ease;
 }
+
+main.fading { opacity: 0; }
 
 /* ── Controles ───────────────────────────────────────────────────────────── */
 .top-bar {
@@ -394,6 +397,24 @@ h1 {
   letter-spacing: 0;
   opacity: 0.7;
 }
+
+/* ── Paleta final ────────────────────────────────────────────────────────── */
+.final-palette {
+  display: flex;
+  gap: 8px;
+}
+
+.palette-swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: outline-color 0.3s;
+}
+
+.palette-swatch.good { outline-color: #4ade80; }
+.palette-swatch.bad  { outline-color: #f87171; }
 
 /* ── Historial ───────────────────────────────────────────────────────────── */
 .history-wrap {

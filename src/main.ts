@@ -32,8 +32,10 @@ let diff:         'easy' | 'hard' = 'easy';
 let isDailyMode   = false;
 let game          = new Game({ totalRounds: 5 });
 
-const ROUND_DURATION = 10_000;
-const HIDE_DELAY     = 3_000;
+const ROUND_DURATION  = 10_000;
+const HIDE_DELAY      = 3_000;
+const FADE_DURATION   = 150;
+const mainEl          = document.querySelector('main')!;
 
 let hideTimer:  ReturnType<typeof setTimeout> | null = null;
 let roundTimer: ReturnType<typeof setTimeout> | null = null;
@@ -103,6 +105,7 @@ function handleAction(): void {
       const best     = getHighscore() ?? avg;
       const history  = pushHistory(avg);
       ui.showFinalScreen(grade, avg, best, isNewRec);
+      ui.showFinalPalette(game.roundResults);
       ui.showHistory(history);
       if (isNewRec) launchConfetti();
 
@@ -119,7 +122,11 @@ function handleAction(): void {
     } else {
       game.advance();
       wheel.reset();
-      beginRound();
+      mainEl.classList.add('fading');
+      setTimeout(() => {
+        beginRound();
+        mainEl.classList.remove('fading');
+      }, FADE_DURATION);
     }
   }
 }
