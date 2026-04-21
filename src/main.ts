@@ -6,6 +6,7 @@ import { type Lang, t } from './i18n';
 import { getHighscore, saveHighscore, pushHistory } from './storage';
 import { playConfirm, playScoreHigh, playScoreLow } from './audio';
 import { launchConfetti } from './confetti';
+import { maybeShowTutorial } from './tutorial';
 
 declare const __BUILD_TIME__: number;
 ((): void => {
@@ -151,6 +152,8 @@ ui.onShare(() => {
 });
 
 ui.setDiff(diff);
-game.startRound();
-wheel.reset();
-beginRound();
+maybeShowTutorial(lang, () => {
+  game.startRound();
+  wheel.reset();
+  beginRound();
+});

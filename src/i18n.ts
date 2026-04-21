@@ -20,6 +20,11 @@ export interface Translations {
   hard:           string;
   history:        string;
   itWas:          (name: string) => string;
+  tutTitle:       string;
+  tut1:           string;
+  tut2:           string;
+  tut3:           string;
+  tutBtn:         string;
 }
 
 const translations: Record<Lang, Translations> = {
@@ -43,6 +48,11 @@ const translations: Record<Lang, Translations> = {
     hard:         'DIFÍCIL',
     history:      'Últimas partidas',
     itWas:        n => `Era ${n}`,
+    tutTitle:     'Cómo jugar',
+    tut1:         'Toca la rueda para elegir un color',
+    tut2:         'Imita el color objetivo lo mejor posible',
+    tut3:         'Confirma antes de que se acabe el tiempo',
+    tutBtn:       'Entendido',
   },
   en: {
     round:        (c, total) => `Round ${c} of ${total}`,
@@ -64,6 +74,11 @@ const translations: Record<Lang, Translations> = {
     hard:         'HARD',
     history:      'Last games',
     itWas:        n => `It was ${n}`,
+    tutTitle:     'How to play',
+    tut1:         'Tap the wheel to pick a color',
+    tut2:         'Match the target color as closely as you can',
+    tut3:         'Confirm before the timer runs out',
+    tutBtn:       'Got it',
   },
 };
 

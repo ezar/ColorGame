@@ -16,6 +16,10 @@ export function saveHighscore(score: number): boolean {
   return false;
 }
 
+const KEY_TUTORIAL = 'colormatch_tutorial_done';
+export function hasDoneTutorial(): boolean { return !!localStorage.getItem(KEY_TUTORIAL); }
+export function markTutorialDone(): void   { localStorage.setItem(KEY_TUTORIAL, '1'); }
+
 export function getHistory(): number[] {
   try {
     return JSON.parse(localStorage.getItem(KEY_HISTORY) ?? '[]');
