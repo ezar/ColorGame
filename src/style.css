@@ -151,19 +151,37 @@ h1 {
   transition: opacity 0.4s ease;
 }
 
-.target-timer-bar {
-  width: 100%;
-  height: 3px;
-  background: var(--bar-bg);
-  border-radius: 2px;
-  overflow: hidden;
+/* ── Countdown overlay (hard mode) ───────────────────────────────────────── */
+.swatch-wrap {
+  position: relative;
+  display: inline-block;
 }
 
-.target-timer-fill {
-  height: 100%;
-  background: var(--fg);
-  border-radius: 2px;
-  width: 0%;
+.countdown-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: clamp(8px, 2vmin, 14px);
+  font-size: clamp(2.2rem, 6vmin, 3.5rem);
+  font-weight: 800;
+  color: rgba(255,255,255,0.95);
+  text-shadow: 0 1px 10px rgba(0,0,0,0.55);
+  pointer-events: none;
+}
+
+.countdown-overlay[hidden] { display: none; }
+
+@keyframes countdown-tick {
+  0%   { transform: scale(1.5); opacity: 0; }
+  18%  { transform: scale(1.0); opacity: 1; }
+  72%  { transform: scale(1.0); opacity: 1; }
+  100% { transform: scale(0.7); opacity: 0; }
+}
+
+.countdown-overlay.tick {
+  animation: countdown-tick 1s ease forwards;
 }
 
 /* ── Rueda ───────────────────────────────────────────────────────────────── */
@@ -363,8 +381,96 @@ h1 {
   text-align: center;
 }
 
-.dr-grade { font-size: 4rem; font-weight: 800; line-height: 1; }
-.dr-avg   { font-size: 0.9rem; color: var(--fg-dim); letter-spacing: 2px; }
+/* ── Daily result card ───────────────────────────────────────────────────── */
+.daily-card {
+  background: #1c2333;
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 24px;
+  padding: 28px 28px 24px;
+  max-width: 300px;
+  width: calc(100% - 40px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 28px 64px rgba(0,0,0,0.55);
+  position: relative;
+  overflow: hidden;
+}
+
+body.light .daily-card {
+  background: #ffffff;
+  border-color: rgba(17,24,39,0.09);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+}
+
+.daily-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--daily-accent, rgba(255,255,255,0.18));
+}
+
+.daily-day {
+  font-size: 0.6rem;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  margin-top: 4px;
+  margin-bottom: 14px;
+}
+
+.daily-grade {
+  font-size: 6rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+@keyframes daily-grade-pop {
+  0%   { transform: scale(0.3); opacity: 0; }
+  65%  { transform: scale(1.18); opacity: 1; }
+  82%  { transform: scale(0.93); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.daily-grade.pop {
+  animation: daily-grade-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.daily-score {
+  font-size: 1rem;
+  color: var(--fg-dim);
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+}
+
+.daily-palette {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 22px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+
+.daily-palette .palette-swatch {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+}
+
+.daily-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.daily-actions .btn {
+  flex: 1;
+  padding: 13px 0;
+}
 
 .tutorial-title {
   font-size: 0.7rem;

@@ -31,8 +31,10 @@
 
     <div class="swatches" id="swatches">
       <div class="swatch-group">
-        <div class="swatch" id="targetSwatch"></div>
-        <div class="target-timer-bar"><div class="target-timer-fill" id="timerFill"></div></div>
+        <div class="swatch-wrap">
+          <div class="swatch" id="targetSwatch"></div>
+          <div class="countdown-overlay" id="hideCountdown" hidden></div>
+        </div>
         <div class="swatch-label" id="targetLabel">Target</div>
       </div>
 
@@ -82,12 +84,12 @@
   <footer id="footer"></footer>
 
   <div id="dailyResult" class="tutorial-overlay" hidden>
-    <div class="tutorial-card">
-      <div class="tutorial-title" id="drDayLabel"></div>
-      <div class="dr-grade" id="drGrade"></div>
-      <div class="dr-avg" id="drAvg"></div>
-      <div class="final-palette" id="drPalette"></div>
-      <div style="display:flex;gap:10px">
+    <div class="daily-card">
+      <div class="daily-day" id="drDayLabel"></div>
+      <div class="daily-grade" id="drGrade"></div>
+      <div class="daily-score" id="drAvg"></div>
+      <div class="daily-palette" id="drPalette"></div>
+      <div class="daily-actions">
         <button class="btn primary" id="drShareBtn"></button>
         <button class="btn" id="drCloseBtn"></button>
       </div>

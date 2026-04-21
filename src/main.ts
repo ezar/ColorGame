@@ -9,6 +9,10 @@ import { launchConfetti, burstSparkles } from './confetti';
 import { maybeShowTutorial } from './tutorial';
 import { getDailyTargets, getTodayKey, getDayNumber, buildDailyShareText } from './daily';
 
+const GRADE_COLORS: Record<string, string> = {
+  S: '#f59e0b', A: '#4ade80', B: '#38bdf8', C: '#fb923c', D: '#f87171', F: '#ef4444',
+};
+
 declare const __BUILD_TIME__: number;
 ((): void => {
   const d  = new Date(__BUILD_TIME__);
@@ -186,7 +190,14 @@ function showDailyResult(rec: ReturnType<typeof getDailyRecord> & {}): void {
   const tr     = t(lang);
   const overlay = document.getElementById('dailyResult')!;
   document.getElementById('drDayLabel')!.textContent = tr.dayN(getDayNumber());
-  document.getElementById('drGrade')!.textContent    = rec.grade;
+  const gradeEl = document.getElementById('drGrade')!;
+  gradeEl.textContent = rec.grade;
+  gradeEl.style.color = GRADE_COLORS[rec.grade] ?? '';
+  gradeEl.classList.remove('pop');
+  void (gradeEl as HTMLElement).offsetWidth;
+  gradeEl.classList.add('pop');
+  (document.querySelector('#dailyResult .daily-card') as HTMLElement | null)
+    ?.style.setProperty('--daily-accent', GRADE_COLORS[rec.grade] ?? 'rgba(255,255,255,0.18)');
   document.getElementById('drAvg')!.textContent      = `${rec.avg} / 100`;
   document.getElementById('drShareBtn')!.textContent = tr.share;
   document.getElementById('drCloseBtn')!.textContent = tr.close;

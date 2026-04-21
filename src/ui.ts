@@ -36,8 +36,9 @@ export class UI {
   private readonly diffBtn       = el<HTMLButtonElement>('diffBtn');
   private readonly dailyBtn      = el<HTMLButtonElement>('dailyBtn');
   private readonly finalStreak   = el('finalStreak');
-  private readonly timerFill       = el('timerFill');
+  private readonly hideCountdown   = el('hideCountdown');
   private readonly roundTimerFill  = el('roundTimerFill');
+  private countdownTimer: ReturnType<typeof setInterval> | null = null;
   private readonly targetLabel   = el('targetLabel');
   private readonly pickedLabel   = el('pickedLabel');
   private readonly accuracyLabel = el('accuracyLabel');
@@ -69,23 +70,32 @@ export class UI {
     this.targetSwatch.classList.remove('faded');
   }
 
-  // ── Timer bar (hard mode) ────────────────────────────────────────────────
+  // ── Countdown overlay (hard mode) ────────────────────────────────────────
 
   startTimerBar(durationMs: number): void {
-    this.timerFill.style.transition = 'none';
-    this.timerFill.style.width      = '100%';
-    // next frame: animate drain
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        this.timerFill.style.transition = `width ${durationMs}ms linear`;
-        this.timerFill.style.width      = '0%';
-      });
-    });
+    this.stopTimerBar();
+    let remaining = Math.round(durationMs / 1000);
+    const show = (): void => {
+      this.hideCountdown.hidden = false;
+      this.hideCountdown.textContent = String(remaining);
+      this.hideCountdown.classList.remove('tick');
+      void this.hideCountdown.offsetWidth;
+      this.hideCountdown.classList.add('tick');
+    };
+    show();
+    this.countdownTimer = setInterval(() => {
+      remaining--;
+      if (remaining <= 0) { this.stopTimerBar(); } else { show(); }
+    }, 1000);
   }
 
   stopTimerBar(): void {
-    this.timerFill.style.transition = 'none';
-    this.timerFill.style.width      = '0%';
+    if (this.countdownTimer !== null) {
+      clearInterval(this.countdownTimer);
+      this.countdownTimer = null;
+    }
+    this.hideCountdown.hidden = true;
+    this.hideCountdown.classList.remove('tick');
   }
 
   // ── Round timer bar ──────────────────────────────────────────────────────
