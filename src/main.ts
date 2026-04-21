@@ -2,7 +2,7 @@ import './style.css';
 import { ColorWheel } from './wheel';
 import { Game } from './game';
 import { UI } from './ui';
-import type { Lang } from './i18n';
+import { type Lang, t } from './i18n';
 
 declare const __BUILD_TIME__: number;
 ((): void => {
@@ -79,6 +79,15 @@ ui.onLangToggle(() => {
 wheel.onColorChange(color => ui.setPickedColor(color));
 ui.onAction(handleAction);
 ui.onRestart(restart);
+ui.onShare(() => {
+  const text = t(lang).shareText(game.finalGrade, game.averageScore);
+  const url  = 'https://ezar.github.io/ColorGame/';
+  if (navigator.share) {
+    navigator.share({ text, url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(`${text}\n${url}`).then(() => alert('Copied!')).catch(() => {});
+  }
+});
 
 game.startRound();
 wheel.reset();

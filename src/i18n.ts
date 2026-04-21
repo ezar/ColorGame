@@ -12,6 +12,8 @@ export interface Translations {
   seeResult:      string;
   finalScore:     string;
   playAgain:      string;
+  share:          string;
+  shareText:      (grade: string, avg: number) => string;
 }
 
 const translations: Record<Lang, Translations> = {
@@ -27,6 +29,8 @@ const translations: Record<Lang, Translations> = {
     seeResult:    'Ver resultado',
     finalScore:   'Puntuación final',
     playAgain:    'Jugar de nuevo',
+    share:        'Compartir',
+    shareText:    (g, a) => `Conseguí ${g} (${a}/100) en Color Match 🎨 ¿Puedes superarlo?`,
   },
   en: {
     round:        (c, total) => `Round ${c} of ${total}`,
@@ -40,6 +44,8 @@ const translations: Record<Lang, Translations> = {
     seeResult:    'See result',
     finalScore:   'Final score',
     playAgain:    'Play again',
+    share:        'Share',
+    shareText:    (g, a) => `I scored ${g} (${a}/100) on Color Match 🎨 Can you beat it?`,
   },
 };
 

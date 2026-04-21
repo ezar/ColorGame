@@ -32,6 +32,7 @@ export class UI {
   private readonly accuracyLabel = el('accuracyLabel');
   private readonly finalScoreLbl = el('finalScoreLabel');
   private readonly restartBtn    = el<HTMLButtonElement>('restartBtn');
+  private readonly shareBtn      = el<HTMLButtonElement>('shareBtn');
 
   private lang: Lang = 'en';
   private actionState: ActionState = 'confirm';
@@ -112,6 +113,7 @@ export class UI {
     this.accuracyLabel.textContent = t(lang).accuracy;
     this.finalScoreLbl.textContent = t(lang).finalScore;
     this.restartBtn.textContent    = t(lang).playAgain;
+    this.shareBtn.textContent      = t(lang).share;
     this.actionBtn.textContent     = this.actionBtnText();
     this.renderRoundInfo();
   }
@@ -124,6 +126,10 @@ export class UI {
 
   onRestart(handler: () => void): void {
     this.restartBtn.addEventListener('click', handler);
+  }
+
+  onShare(handler: () => void): void {
+    this.shareBtn.addEventListener('click', handler);
   }
 
   onThemeToggle(handler: () => void): void {
