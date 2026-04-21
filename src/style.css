@@ -60,10 +60,16 @@ main {
 /* ── Controles ───────────────────────────────────────────────────────────── */
 .top-bar {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   justify-content: flex-end;
   flex-shrink: 0;
   padding-bottom: clamp(4px, 1vh, 10px);
+}
+
+.ctrl-btn.daily-active {
+  border-color: var(--border-hover);
+  font-weight: 600;
 }
 
 .ctrl-btn {
@@ -295,6 +301,12 @@ h1 {
   letter-spacing: 2px;
 }
 
+.final-meta {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
 .final-best {
   font-size: 1rem;
   letter-spacing: 1px;
@@ -306,6 +318,11 @@ h1 {
   font-size: 1.1rem;
   letter-spacing: 2px;
   text-transform: uppercase;
+}
+
+.final-streak {
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 /* ── Tutorial ────────────────────────────────────────────────────────────── */

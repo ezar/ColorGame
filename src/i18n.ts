@@ -25,6 +25,10 @@ export interface Translations {
   tut2:           string;
   tut3:           string;
   tutBtn:         string;
+  daily:          string;
+  dailyDone:      string;
+  dayN:           (n: number) => string;
+  streak:         (n: number) => string;
 }
 
 const translations: Record<Lang, Translations> = {
@@ -53,6 +57,10 @@ const translations: Record<Lang, Translations> = {
     tut2:         'Imita el color objetivo lo mejor posible',
     tut3:         'Confirma antes de que se acabe el tiempo',
     tutBtn:       'Entendido',
+    daily:        'DIARIO',
+    dailyDone:    'DIARIO ✓',
+    dayN:         n => `Día ${n}`,
+    streak:       n => `🔥 ${n}`,
   },
   en: {
     round:        (c, total) => `Round ${c} of ${total}`,
@@ -79,6 +87,10 @@ const translations: Record<Lang, Translations> = {
     tut2:         'Match the target color as closely as you can',
     tut3:         'Confirm before the timer runs out',
     tutBtn:       'Got it',
+    daily:        'DAILY',
+    dailyDone:    'DAILY ✓',
+    dayN:         n => `Day ${n}`,
+    streak:       n => `🔥 ${n}`,
   },
 };
 

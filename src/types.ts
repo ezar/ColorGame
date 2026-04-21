@@ -14,4 +14,5 @@ export interface RoundResult {
 
 export interface GameConfig {
   totalRounds: number;
+  targets?: HslColor[];
 }

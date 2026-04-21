@@ -30,7 +30,7 @@ export class Game {
 
   startRound(): void {
     this.round++;
-    this.target = randomTarget();
+    this.target = this.config.targets?.[this.round - 1] ?? randomTarget();
     this.phase = 'playing';
   }
 

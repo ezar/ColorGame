@@ -33,6 +33,8 @@ export class UI {
   private readonly themeBtn      = el<HTMLButtonElement>('themeBtn');
   private readonly langBtn       = el<HTMLButtonElement>('langBtn');
   private readonly diffBtn       = el<HTMLButtonElement>('diffBtn');
+  private readonly dailyBtn      = el<HTMLButtonElement>('dailyBtn');
+  private readonly finalStreak   = el('finalStreak');
   private readonly timerFill       = el('timerFill');
   private readonly roundTimerFill  = el('roundTimerFill');
   private readonly targetLabel   = el('targetLabel');
@@ -44,7 +46,7 @@ export class UI {
 
   private lang: Lang = 'en';
   private actionState: ActionState = 'confirm';
-  private roundInfo = { round: 0, total: 0, avg: undefined as number | undefined };
+  private roundInfo = { round: 0, total: 0, avg: undefined as number | undefined, dayLabel: undefined as string | undefined };
 
   // ── Color ───────────────────────────────────────────────────────────────
 
@@ -105,16 +107,18 @@ export class UI {
 
   // ── Round info ──────────────────────────────────────────────────────────
 
-  updateRoundInfo(round: number, total: number, avg?: number): void {
-    this.roundInfo = { round, total, avg };
+  updateRoundInfo(round: number, total: number, avg?: number, dayLabel?: string): void {
+    this.roundInfo = { round, total, avg, dayLabel };
     this.renderRoundInfo();
   }
 
   private renderRoundInfo(): void {
     const tr = t(this.lang);
-    const { round, total, avg } = this.roundInfo;
-    this.roundLabel.textContent = tr.round(round, total);
-    this.avgScore.textContent   = avg !== undefined ? tr.average(avg) : tr.averageEmpty;
+    const { round, total, avg, dayLabel } = this.roundInfo;
+    this.roundLabel.textContent = dayLabel
+      ? `${dayLabel} · ${tr.round(round, total)}`
+      : tr.round(round, total);
+    this.avgScore.textContent = avg !== undefined ? tr.average(avg) : tr.averageEmpty;
   }
 
   // ── Screens ─────────────────────────────────────────────────────────────
@@ -205,9 +209,25 @@ export class UI {
     this.historyLabel.textContent  = t(lang).history;
     this.actionBtn.textContent     = this.actionBtnText();
     this.renderRoundInfo();
-    // re-render diff button with new lang
     const isDiff = this.diffBtn.dataset.diff as 'easy' | 'hard' | undefined;
     if (isDiff) this.setDiff(isDiff);
+    // re-render daily button with new lang
+    this.dailyBtn.textContent = this.dailyBtn.classList.contains('daily-active')
+      ? t(lang).dailyDone : t(lang).daily;
+  }
+
+  setDailyBtn(done: boolean): void {
+    const tr = t(this.lang);
+    this.dailyBtn.textContent = done ? tr.dailyDone : tr.daily;
+    this.dailyBtn.classList.toggle('daily-active', done);
+  }
+
+  showStreak(count: number): void {
+    this.finalStreak.textContent = count > 0 ? t(this.lang).streak(count) : '';
+  }
+
+  onDailyToggle(handler: () => void): void {
+    this.dailyBtn.addEventListener('click', handler);
   }
 
   setDiff(diff: 'easy' | 'hard'): void {

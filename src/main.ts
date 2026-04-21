@@ -3,10 +3,11 @@ import { ColorWheel } from './wheel';
 import { Game } from './game';
 import { UI } from './ui';
 import { type Lang, t } from './i18n';
-import { getHighscore, saveHighscore, pushHistory } from './storage';
+import { getHighscore, saveHighscore, pushHistory, getDailyRecord, saveDailyRecord, getStreak, updateStreak } from './storage';
 import { playConfirm, playScoreHigh, playScoreLow } from './audio';
 import { launchConfetti } from './confetti';
 import { maybeShowTutorial } from './tutorial';
+import { getDailyTargets, getTodayKey, getDayNumber, buildDailyShareText } from './daily';
 
 declare const __BUILD_TIME__: number;
 ((): void => {
@@ -23,12 +24,13 @@ declare const __BUILD_TIME__: number;
 
 const canvas = document.getElementById('wheelCanvas') as HTMLCanvasElement;
 const wheel  = new ColorWheel(canvas);
-const game   = new Game({ totalRounds: 5 });
 const ui     = new UI();
 
-let theme: 'dark' | 'light' = 'dark';
-let lang:  Lang              = 'en';
-let diff:  'easy' | 'hard'  = 'easy';
+let theme:        'dark' | 'light' = 'dark';
+let lang:         Lang             = 'en';
+let diff:         'easy' | 'hard' = 'easy';
+let isDailyMode   = false;
+let game          = new Game({ totalRounds: 5 });
 
 const ROUND_DURATION = 10_000;
 const HIDE_DELAY     = 3_000;
@@ -59,7 +61,8 @@ function beginRound(): void {
   wheel.setLightness(game.currentTarget.l);
   ui.showRound();
   ui.setTargetColor(game.currentTarget);
-  ui.updateRoundInfo(game.currentRound, game.totalRounds, avg);
+  ui.updateRoundInfo(game.currentRound, game.totalRounds, avg,
+    isDailyMode ? t(lang).dayN(getDayNumber()) : undefined);
 
   roundStart = Date.now();
   ui.startRoundTimer(ROUND_DURATION);
@@ -95,12 +98,24 @@ function handleAction(): void {
     if (game.isLastRound()) {
       game.advance();
       const avg      = game.averageScore;
+      const grade    = game.finalGrade;
       const isNewRec = saveHighscore(avg);
       const best     = getHighscore() ?? avg;
       const history  = pushHistory(avg);
-      ui.showFinalScreen(game.finalGrade, avg, best, isNewRec);
+      ui.showFinalScreen(grade, avg, best, isNewRec);
       ui.showHistory(history);
       if (isNewRec) launchConfetti();
+
+      if (isDailyMode) {
+        const today   = getTodayKey();
+        const streak  = updateStreak(today);
+        const shareText = buildDailyShareText(grade, avg, game.roundResults, lang);
+        saveDailyRecord({ date: today, grade, avg, shareText });
+        ui.showStreak(streak);
+        ui.setDailyBtn(true);
+      } else {
+        ui.showStreak(getStreak());
+      }
     } else {
       game.advance();
       wheel.reset();
@@ -109,10 +124,13 @@ function handleAction(): void {
   }
 }
 
-function restart(): void {
+function restart(daily = false): void {
   clearTimers();
-  roundTimes = [];
-  game.reset();
+  roundTimes  = [];
+  isDailyMode = daily;
+  game = daily
+    ? new Game({ totalRounds: 5, targets: getDailyTargets() })
+    : new Game({ totalRounds: 5 });
   game.startRound();
   wheel.reset();
   beginRound();
@@ -133,7 +151,20 @@ ui.onLangToggle(() => {
 ui.onDiffToggle(() => {
   diff = diff === 'easy' ? 'hard' : 'easy';
   ui.setDiff(diff);
-  restart();
+  restart(isDailyMode);
+});
+
+ui.onDailyToggle(() => {
+  const rec = getDailyRecord();
+  const alreadyToday = rec?.date === getTodayKey();
+  if (alreadyToday) {
+    // show previous result via share
+    if (navigator.share) navigator.share({ text: rec!.shareText }).catch(() => {});
+    else navigator.clipboard.writeText(rec!.shareText).catch(() => {});
+    return;
+  }
+  ui.setDailyBtn(false);
+  restart(true);
 });
 
 // ── Wire-up ───────────────────────────────────────────────────────────────
@@ -142,16 +173,18 @@ wheel.onColorChange(color => ui.setPickedColor(color));
 ui.onAction(handleAction);
 ui.onRestart(restart);
 ui.onShare(() => {
-  const text = t(lang).shareText(game.finalGrade, game.averageScore, avgRoundTime());
-  const url  = 'https://ezar.github.io/ColorGame/';
+  const text = isDailyMode
+    ? buildDailyShareText(game.finalGrade, game.averageScore, game.roundResults, lang)
+    : `${t(lang).shareText(game.finalGrade, game.averageScore, avgRoundTime())}\nhttps://ezar.github.io/ColorGame/`;
   if (navigator.share) {
-    navigator.share({ text, url }).catch(() => {});
+    navigator.share({ text }).catch(() => {});
   } else {
-    navigator.clipboard.writeText(`${text}\n${url}`).then(() => alert('Copied!')).catch(() => {});
+    navigator.clipboard.writeText(text).then(() => alert('Copied!')).catch(() => {});
   }
 });
 
 ui.setDiff(diff);
+ui.setDailyBtn(getDailyRecord()?.date === getTodayKey());
 maybeShowTutorial(lang, () => {
   game.startRound();
   wheel.reset();
