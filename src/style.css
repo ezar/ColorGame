@@ -1,8 +1,40 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* ── Tema: variables ─────────────────────────────────────────────────────── */
+:root {
+  --bg:           #111827;
+  --fg:           #ffffff;
+  --fg-dim:       rgba(255,255,255,0.45);
+  --swatch-empty: #1f2937;
+  --border:       rgba(255,255,255,0.25);
+  --border-hover: rgba(255,255,255,0.55);
+  --hover-bg:     rgba(255,255,255,0.08);
+  --bar-bg:       rgba(255,255,255,0.1);
+  --primary-bg:   rgba(255,255,255,0.95);
+  --primary-fg:   #111827;
+  --ctrl-bg:      rgba(255,255,255,0.07);
+  --ctrl-hover:   rgba(255,255,255,0.15);
+}
+
+body.light {
+  --bg:           #f3f4f6;
+  --fg:           #111827;
+  --fg-dim:       rgba(17,24,39,0.45);
+  --swatch-empty: #e5e7eb;
+  --border:       rgba(17,24,39,0.2);
+  --border-hover: rgba(17,24,39,0.5);
+  --hover-bg:     rgba(17,24,39,0.05);
+  --bar-bg:       rgba(17,24,39,0.1);
+  --primary-bg:   #111827;
+  --primary-fg:   #f3f4f6;
+  --ctrl-bg:      rgba(17,24,39,0.07);
+  --ctrl-hover:   rgba(17,24,39,0.14);
+}
+
+/* ── Layout base ─────────────────────────────────────────────────────────── */
 body {
-  background: #111827;
-  color: #fff;
+  background: var(--bg);
+  color: var(--fg);
   font-family: 'Segoe UI', system-ui, sans-serif;
   min-height: 100vh;
   display: flex;
@@ -11,8 +43,39 @@ body {
   justify-content: center;
   padding: 24px;
   gap: 28px;
+  transition: background 0.3s, color 0.3s;
 }
 
+/* ── Controles flotantes ─────────────────────────────────────────────────── */
+.top-bar {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.ctrl-btn {
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 17px;
+  border: 1.5px solid var(--border);
+  background: var(--ctrl-bg);
+  color: var(--fg);
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  font-family: inherit;
+}
+
+.ctrl-btn:hover {
+  background: var(--ctrl-hover);
+  border-color: var(--border-hover);
+}
+
+/* ── Título ──────────────────────────────────────────────────────────────── */
 h1 {
   font-size: 1.4rem;
   letter-spacing: 8px;
@@ -21,15 +84,17 @@ h1 {
   opacity: 0.85;
 }
 
+/* ── Info de ronda ───────────────────────────────────────────────────────── */
 .info-bar {
   display: flex;
   gap: 32px;
   font-size: 0.8rem;
   letter-spacing: 2px;
   text-transform: uppercase;
-  opacity: 0.5;
+  color: var(--fg-dim);
 }
 
+/* ── Swatches ────────────────────────────────────────────────────────────── */
 .swatches {
   display: flex;
   gap: 20px;
@@ -46,26 +111,29 @@ h1 {
   width: 130px;
   height: 130px;
   border-radius: 14px;
-  background: #1f2937;
+  background: var(--swatch-empty);
+  transition: background 0.15s;
 }
 
 .swatch-label {
   font-size: 0.65rem;
   letter-spacing: 3px;
   text-transform: uppercase;
-  opacity: 0.45;
+  color: var(--fg-dim);
 }
 
+/* ── Rueda ───────────────────────────────────────────────────────────────── */
 #wheelCanvas {
-  cursor: none;
+  cursor: crosshair;
   display: block;
 }
 
+/* ── Botones ─────────────────────────────────────────────────────────────── */
 .btn {
   padding: 14px 48px;
-  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border: 1.5px solid var(--border);
   background: transparent;
-  color: #fff;
+  color: var(--fg);
   border-radius: 50px;
   font-size: 0.8rem;
   letter-spacing: 3px;
@@ -76,18 +144,21 @@ h1 {
 }
 
 .btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: var(--hover-bg);
+  border-color: var(--border-hover);
 }
 
 .btn.primary {
-  background: rgba(255, 255, 255, 0.95);
-  color: #111827;
+  background: var(--primary-bg);
+  color: var(--primary-fg);
   border-color: transparent;
 }
 
-.btn.primary:hover { background: #fff; }
+.btn.primary:hover {
+  opacity: 0.9;
+}
 
+/* ── Score de ronda ──────────────────────────────────────────────────────── */
 .score-display {
   display: none;
   flex-direction: column;
@@ -99,7 +170,7 @@ h1 {
   font-size: 0.65rem;
   letter-spacing: 3px;
   text-transform: uppercase;
-  opacity: 0.45;
+  color: var(--fg-dim);
 }
 
 .score-number {
@@ -111,19 +182,20 @@ h1 {
 .score-bar {
   width: 260px;
   height: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bar-bg);
   border-radius: 2px;
   overflow: hidden;
 }
 
 .score-bar-fill {
   height: 100%;
-  background: #fff;
+  background: var(--fg);
   border-radius: 2px;
   width: 0%;
   transition: width 0.6s ease;
 }
 
+/* ── Pantalla final ──────────────────────────────────────────────────────── */
 #finalScreen {
   display: none;
   flex-direction: column;
@@ -140,6 +212,6 @@ h1 {
 
 .final-avg {
   font-size: 1rem;
-  opacity: 0.5;
+  color: var(--fg-dim);
   letter-spacing: 2px;
 }

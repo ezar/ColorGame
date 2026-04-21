@@ -106,28 +106,46 @@ export class ColorWheel {
     return { x, y };
   }
 
+  private toCanvasPos(clientX: number, clientY: number): { x: number; y: number } {
+    const rect = this.canvas.getBoundingClientRect();
+    return this.clamp(
+      (clientX - rect.left) * (this.canvas.width / rect.width),
+      (clientY - rect.top)  * (this.canvas.height / rect.height),
+    );
+  }
+
   onColorChange(handler: (color: HslColor) => void): void {
-    const update = (clientX: number, clientY: number) => {
+    let pressing = false;
+
+    // Move cursor visually on hover; only fire handler when pressing (click/drag)
+    const moveCursor = (clientX: number, clientY: number) => {
       if (!this.active) return;
-      const rect = this.canvas.getBoundingClientRect();
-      const scaleX = this.canvas.width / rect.width;
-      const scaleY = this.canvas.height / rect.height;
-      this.cursor = this.clamp(
-        (clientX - rect.left) * scaleX,
-        (clientY - rect.top) * scaleY,
-      );
+      this.cursor = this.toCanvasPos(clientX, clientY);
       this.render();
-      handler(this.getColor());
     };
 
-    this.canvas.addEventListener('mousemove', e => update(e.clientX, e.clientY));
-    this.canvas.addEventListener('touchmove', e => {
-      e.preventDefault();
-      update(e.touches[0].clientX, e.touches[0].clientY);
-    }, { passive: false });
+    const selectColor = (clientX: number, clientY: number) => {
+      moveCursor(clientX, clientY);
+      if (this.active) handler(this.getColor());
+    };
+
+    this.canvas.addEventListener('mousemove', e => {
+      if (pressing) selectColor(e.clientX, e.clientY);
+      else moveCursor(e.clientX, e.clientY);
+    });
+    this.canvas.addEventListener('mousedown', e => {
+      pressing = true;
+      selectColor(e.clientX, e.clientY);
+    });
+    window.addEventListener('mouseup', () => { pressing = false; });
+
     this.canvas.addEventListener('touchstart', e => {
       e.preventDefault();
-      update(e.touches[0].clientX, e.touches[0].clientY);
+      selectColor(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: false });
+    this.canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      selectColor(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: false });
   }
 }

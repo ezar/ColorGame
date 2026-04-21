@@ -6,6 +6,12 @@
   <title>Color Match</title>
 </head>
 <body>
+
+  <div class="top-bar">
+    <button class="ctrl-btn" id="themeBtn">☽</button>
+    <button class="ctrl-btn" id="langBtn">EN</button>
+  </div>
+
   <h1>Color Match</h1>
 
   <div class="info-bar" id="infoBar">
@@ -16,16 +22,16 @@
   <div class="swatches" id="swatches">
     <div class="swatch-group">
       <div class="swatch" id="targetSwatch"></div>
-      <div class="swatch-label">Objetivo</div>
+      <div class="swatch-label" id="targetLabel">Objetivo</div>
     </div>
     <div class="swatch-group">
       <div class="swatch" id="pickedSwatch"></div>
-      <div class="swatch-label">Tu color</div>
+      <div class="swatch-label" id="pickedLabel">Tu color</div>
     </div>
   </div>
 
   <div class="score-display" id="scoreDisplay">
-    <div class="score-label">Precisión</div>
+    <div class="score-label" id="accuracyLabel">Precisión</div>
     <div class="score-number" id="scoreNumber">—</div>
     <div class="score-bar">
       <div class="score-bar-fill" id="scoreBarFill"></div>
@@ -37,7 +43,7 @@
   <button class="btn primary" id="actionBtn">Confirmar</button>
 
   <div id="finalScreen">
-    <div class="score-label">Puntuación final</div>
+    <div class="score-label" id="finalScoreLabel">Puntuación final</div>
     <div class="grade" id="finalGrade"></div>
     <div class="final-avg" id="finalAvg"></div>
     <button class="btn primary" id="restartBtn" style="margin-top:8px">Jugar de nuevo</button>

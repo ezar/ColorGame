@@ -2,11 +2,17 @@ import './style.css';
 import { ColorWheel } from './wheel';
 import { Game } from './game';
 import { UI } from './ui';
+import type { Lang } from './i18n';
 
 const canvas = document.getElementById('wheelCanvas') as HTMLCanvasElement;
 const wheel  = new ColorWheel(canvas);
 const game   = new Game({ totalRounds: 5 });
 const ui     = new UI();
+
+let theme: 'dark' | 'light' = 'dark';
+let lang: Lang = 'es';
+
+// ── Game flow ─────────────────────────────────────────────────────────────
 
 function beginRound(): void {
   const avg = game.roundResults.length > 0 ? game.averageScore : undefined;
@@ -42,6 +48,20 @@ function restart(): void {
   wheel.reset();
   beginRound();
 }
+
+// ── Theme & language ──────────────────────────────────────────────────────
+
+ui.onThemeToggle(() => {
+  theme = theme === 'dark' ? 'light' : 'dark';
+  ui.setTheme(theme);
+});
+
+ui.onLangToggle(() => {
+  lang = lang === 'es' ? 'en' : 'es';
+  ui.setLang(lang);
+});
+
+// ── Wire-up ───────────────────────────────────────────────────────────────
 
 wheel.onColorChange(color => ui.setPickedColor(color));
 ui.onAction(handleAction);
