@@ -148,6 +148,9 @@ export class UI {
     this.wheelCanvas.style.display  = 'none';
     this.actionBtn.style.display    = 'none';
     this.finalScreen.style.display  = 'flex';
+    this.finalGrade.classList.remove('pop');
+    void this.finalGrade.offsetWidth; // force reflow to re-trigger animation
+    this.finalGrade.classList.add('pop');
     this.finalGrade.textContent = grade;
     this.finalAvg.textContent   = `${avg} / 100`;
     const tr = t(this.lang);
