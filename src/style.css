@@ -216,3 +216,12 @@ h1 {
   color: var(--fg-dim);
   letter-spacing: 2px;
 }
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+footer {
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  color: var(--fg-dim);
+  opacity: 0.5;
+  text-transform: uppercase;
+}
