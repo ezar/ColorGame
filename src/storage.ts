@@ -40,7 +40,7 @@ export function pushHistory(score: number): number[] {
 
 // ── Daily record ──────────────────────────────────────────────────────────
 export interface DailyResult { h: number; s: number; l: number; score: number; }
-export interface DailyRecord { date: string; grade: string; avg: number; shareText: string; results: DailyResult[]; }
+export interface DailyRecord { date: string; grade: string; avg: number; shareText: string; results?: DailyResult[]; }
 
 export function getDailyRecord(): DailyRecord | null {
   try   { return JSON.parse(localStorage.getItem(KEY_DAILY) ?? 'null'); }

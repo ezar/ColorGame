@@ -193,7 +193,7 @@ function showDailyResult(rec: ReturnType<typeof getDailyRecord> & {}): void {
 
   const palette = document.getElementById('drPalette')!;
   palette.innerHTML = '';
-  rec.results.forEach(r => {
+  (rec.results ?? []).forEach(r => {
     const s = document.createElement('div');
     s.className = 'palette-swatch' + (r.score >= 80 ? ' good' : r.score < 40 ? ' bad' : '');
     s.style.background = `hsl(${r.h},${r.s}%,${r.l}%)`;
