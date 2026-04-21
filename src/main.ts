@@ -4,6 +4,7 @@ import { Game } from './game';
 import { UI } from './ui';
 import { type Lang, t } from './i18n';
 import { getHighscore, saveHighscore, pushHistory } from './storage';
+import { playConfirm, playScoreHigh, playScoreLow } from './audio';
 
 declare const __BUILD_TIME__: number;
 ((): void => {
@@ -73,7 +74,10 @@ function confirmPick(): void {
   roundTimes.push(Date.now() - roundStart);
   const result = game.confirmPick(wheel.getColor());
   wheel.lock();
+  playConfirm();
   ui.showRoundScore(result, game.isLastRound());
+  if (result.score >= 80) playScoreHigh();
+  else if (result.score < 40) playScoreLow();
   ui.updateRoundInfo(game.currentRound, game.totalRounds, game.averageScore);
 }
 
