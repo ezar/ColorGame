@@ -10,7 +10,7 @@ const game   = new Game({ totalRounds: 5 });
 const ui     = new UI();
 
 let theme: 'dark' | 'light' = 'dark';
-let lang: Lang = 'es';
+let lang: Lang = 'en';
 
 // ── Game flow ─────────────────────────────────────────────────────────────
 

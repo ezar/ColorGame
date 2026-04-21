@@ -33,7 +33,7 @@ export class UI {
   private readonly finalScoreLbl = el('finalScoreLabel');
   private readonly restartBtn    = el<HTMLButtonElement>('restartBtn');
 
-  private lang: Lang = 'es';
+  private lang: Lang = 'en';
   private actionState: ActionState = 'confirm';
   private roundInfo = { round: 0, total: 0, avg: undefined as number | undefined };
 

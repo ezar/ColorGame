@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Color Match</title>
   <meta name="theme-color" content="#111827"/>
-  <meta name="description" content="Entrena tu percepción del color"/>
+  <meta name="description" content="Train your color perception"/>
   <link rel="icon" href="%BASE_URL%favicon.ico" sizes="48x48"/>
   <link rel="icon" href="%BASE_URL%icon.svg" sizes="any" type="image/svg+xml"/>
   <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon-180x180.png"/>
@@ -15,29 +15,29 @@
 
   <div class="top-bar">
     <button class="ctrl-btn" id="themeBtn">☽</button>
-    <button class="ctrl-btn" id="langBtn">EN</button>
+    <button class="ctrl-btn" id="langBtn">ES</button>
   </div>
 
   <h1>Color Match</h1>
 
   <div class="info-bar" id="infoBar">
-    <span id="roundLabel">Ronda 1 de 5</span>
-    <span id="avgScore">Media: —</span>
+    <span id="roundLabel">Round 1 of 5</span>
+    <span id="avgScore">Avg: —</span>
   </div>
 
   <div class="swatches" id="swatches">
     <div class="swatch-group">
       <div class="swatch" id="targetSwatch"></div>
-      <div class="swatch-label" id="targetLabel">Objetivo</div>
+      <div class="swatch-label" id="targetLabel">Target</div>
     </div>
     <div class="swatch-group">
       <div class="swatch" id="pickedSwatch"></div>
-      <div class="swatch-label" id="pickedLabel">Tu color</div>
+      <div class="swatch-label" id="pickedLabel">Your color</div>
     </div>
   </div>
 
   <div class="score-display" id="scoreDisplay">
-    <div class="score-label" id="accuracyLabel">Precisión</div>
+    <div class="score-label" id="accuracyLabel">Accuracy</div>
     <div class="score-number" id="scoreNumber">—</div>
     <div class="score-bar">
       <div class="score-bar-fill" id="scoreBarFill"></div>
@@ -46,13 +46,13 @@
 
   <canvas id="wheelCanvas" width="340" height="340"></canvas>
 
-  <button class="btn primary" id="actionBtn">Confirmar</button>
+  <button class="btn primary" id="actionBtn">Confirm</button>
 
   <div id="finalScreen">
-    <div class="score-label" id="finalScoreLabel">Puntuación final</div>
+    <div class="score-label" id="finalScoreLabel">Final score</div>
     <div class="grade" id="finalGrade"></div>
     <div class="final-avg" id="finalAvg"></div>
-    <button class="btn primary" id="restartBtn" style="margin-top:8px">Jugar de nuevo</button>
+    <button class="btn primary" id="restartBtn" style="margin-top:8px">Play again</button>
   </div>
 
   <script type="module" src="/src/main.ts"></script>

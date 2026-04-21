@@ -17,18 +17,18 @@
 }
 
 body.light {
-  --bg:           #f3f4f6;
+  --bg:           #ffffff;
   --fg:           #111827;
-  --fg-dim:       rgba(17,24,39,0.45);
-  --swatch-empty: #e5e7eb;
-  --border:       rgba(17,24,39,0.2);
-  --border-hover: rgba(17,24,39,0.5);
+  --fg-dim:       rgba(17,24,39,0.5);
+  --swatch-empty: #d1d5db;
+  --border:       rgba(17,24,39,0.18);
+  --border-hover: rgba(17,24,39,0.45);
   --hover-bg:     rgba(17,24,39,0.05);
-  --bar-bg:       rgba(17,24,39,0.1);
+  --bar-bg:       rgba(17,24,39,0.12);
   --primary-bg:   #111827;
-  --primary-fg:   #f3f4f6;
-  --ctrl-bg:      rgba(17,24,39,0.07);
-  --ctrl-hover:   rgba(17,24,39,0.14);
+  --primary-fg:   #ffffff;
+  --ctrl-bg:      rgba(17,24,39,0.06);
+  --ctrl-hover:   rgba(17,24,39,0.12);
 }
 
 /* ── Layout base ─────────────────────────────────────────────────────────── */
@@ -113,6 +113,7 @@ h1 {
   border-radius: 14px;
   background: var(--swatch-empty);
   transition: background 0.15s;
+  outline: 1.5px solid var(--border);
 }
 
 .swatch-label {
