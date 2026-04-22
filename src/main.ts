@@ -23,7 +23,7 @@ declare const __BUILD_TIME__: number;
   const mm = String(d.getMinutes()).padStart(2, '0');
   const v  = `${yy}.${M}.${dd}.${hh}${mm}`;
   const footer = document.getElementById('footer');
-  if (footer) footer.textContent = `© ${d.getFullYear()} ezar · v${v}`;
+  if (footer) footer.innerHTML = `© ${d.getFullYear()} <a href="https://github.com/ezar/ColorGame" target="_blank" rel="noopener">ezar</a> · v${v}`;
 })();
 
 const canvas = document.getElementById('wheelCanvas') as HTMLCanvasElement;
