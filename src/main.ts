@@ -4,7 +4,7 @@ import { Game } from './game';
 import { UI } from './ui';
 import { type Lang, t } from './i18n';
 import { getHighscore, saveHighscore, pushHistory, getDailyRecord, saveDailyRecord, getStreak, updateStreak } from './storage';
-import { playConfirm, playScoreHigh, playScoreLow, playPerfect } from './audio';
+import { playConfirm, playScoreHigh, playScoreLow, playPerfect, isMuted, toggleMute } from './audio';
 import { launchConfetti, burstSparkles } from './confetti';
 import { maybeShowTutorial } from './tutorial';
 import { getDailyTargets, getTodayKey, getDayNumber, buildDailyShareText } from './daily';
@@ -158,7 +158,10 @@ function restart(daily = false): void {
   beginRound();
 }
 
-// ── Theme, language & difficulty ──────────────────────────────────────────
+// ── Theme, language, sound & difficulty ───────────────────────────────────
+
+ui.onSoundToggle(() => ui.setSoundBtn(toggleMute()));
+ui.setSoundBtn(isMuted());
 
 ui.onThemeToggle(() => {
   theme = theme === 'dark' ? 'light' : 'dark';

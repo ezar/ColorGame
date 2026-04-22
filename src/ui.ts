@@ -31,6 +31,7 @@ export class UI {
   private readonly historyLabel  = el('historyLabel');
   private readonly finalPalette  = el('finalPalette');
   private readonly wheelCanvas   = el<HTMLCanvasElement>('wheelCanvas');
+  private readonly soundBtn      = el<HTMLButtonElement>('soundBtn');
   private readonly themeBtn      = el<HTMLButtonElement>('themeBtn');
   private readonly langBtn       = el<HTMLButtonElement>('langBtn');
   private readonly diffBtn       = el<HTMLButtonElement>('diffBtn');
@@ -271,6 +272,14 @@ export class UI {
 
   onShare(handler: () => void): void {
     this.shareBtn.addEventListener('click', handler);
+  }
+
+  setSoundBtn(muted: boolean): void {
+    this.soundBtn.textContent = muted ? '🔇' : '🔊';
+  }
+
+  onSoundToggle(handler: () => void): void {
+    this.soundBtn.addEventListener('click', handler);
   }
 
   onThemeToggle(handler: () => void): void {

@@ -1,4 +1,13 @@
 let ctx: AudioContext | null = null;
+let muted = localStorage.getItem('colormatch_muted') === '1';
+
+export function isMuted(): boolean { return muted; }
+
+export function toggleMute(): boolean {
+  muted = !muted;
+  localStorage.setItem('colormatch_muted', muted ? '1' : '0');
+  return muted;
+}
 
 function getCtx(): AudioContext {
   if (!ctx) ctx = new AudioContext();
@@ -6,6 +15,7 @@ function getCtx(): AudioContext {
 }
 
 function beep(freq: number, type: OscillatorType, duration: number, gain: number): void {
+  if (muted) return;
   const ac  = getCtx();
   const osc = ac.createOscillator();
   const env = ac.createGain();
@@ -24,6 +34,7 @@ export function playConfirm(): void {
 }
 
 export function playScoreHigh(): void {
+  if (muted) return;
   // two ascending tones
   const ac = getCtx();
   const t  = ac.currentTime;
@@ -45,6 +56,7 @@ export function playScoreLow(): void {
 }
 
 export function playPerfect(): void {
+  if (muted) return;
   // C5 – E5 – G5 – C6 ascending arpeggio
   const ac = getCtx();
   const t  = ac.currentTime;
