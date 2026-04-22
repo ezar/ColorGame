@@ -138,7 +138,6 @@ export class ColorWheel {
 
     this.canvas.addEventListener('mousemove', e => {
       if (pressing) selectColor(e.clientX, e.clientY);
-      else moveCursor(e.clientX, e.clientY);
     });
     this.canvas.addEventListener('mousedown', e => {
       pressing = true;
