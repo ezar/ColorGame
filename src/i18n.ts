@@ -30,6 +30,10 @@ export interface Translations {
   dayN:           (n: number) => string;
   streak:         (n: number) => string;
   close:          string;
+  timeAttack:     string;
+  taRounds:       (n: number) => string;
+  taScore:        string;
+  taShare:        (grade: string, rounds: number, avg: number) => string;
 }
 
 const translations: Record<Lang, Translations> = {
@@ -63,6 +67,10 @@ const translations: Record<Lang, Translations> = {
     dayN:         n => `Día ${n}`,
     streak:       n => `🔥 ${n}`,
     close:        'Cerrar',
+    timeAttack:   'TIEMPO',
+    taRounds:     n => `${n} rondas`,
+    taScore:      'Contrarreloj',
+    taShare:      (g, r, a) => `Hice ${r} rondas en 60s en Color Match ⏱ Nota ${g}, media ${a}/100 ¿Puedes superarlo?`,
   },
   en: {
     round:        (c, total) => `Round ${c} of ${total}`,
@@ -94,6 +102,10 @@ const translations: Record<Lang, Translations> = {
     dayN:         n => `Day ${n}`,
     streak:       n => `🔥 ${n}`,
     close:        'Close',
+    timeAttack:   'TIME',
+    taRounds:     n => `${n} rounds`,
+    taScore:      'Time attack',
+    taShare:      (g, r, a) => `I played ${r} rounds in 60s on Color Match ⏱ Grade ${g}, avg ${a}/100. Can you beat it?`,
   },
 };
 

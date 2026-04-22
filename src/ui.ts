@@ -36,6 +36,8 @@ export class UI {
   private readonly langBtn       = el<HTMLButtonElement>('langBtn');
   private readonly diffBtn       = el<HTMLButtonElement>('diffBtn');
   private readonly dailyBtn      = el<HTMLButtonElement>('dailyBtn');
+  private readonly taBtn         = el<HTMLButtonElement>('taBtn');
+  private readonly historyWrap   = el('historyWrap');
   private readonly finalStreak   = el('finalStreak');
   private readonly hideCountdown   = el('hideCountdown');
   private readonly roundTimerFill  = el('roundTimerFill');
@@ -151,11 +153,11 @@ export class UI {
     this.finalScreen.style.display = 'none';
   }
 
-  showRoundScore(result: RoundResult, isLastRound: boolean): void {
+  showRoundScore(result: RoundResult, isLastRound: boolean, keepTimer = false): void {
     this.actionState = isLastRound ? 'seeResult' : 'nextRound';
     this.revealTargetColor(result.target);
     this.stopTimerBar();
-    this.stopRoundTimer();
+    if (!keepTimer) this.stopRoundTimer();
     this.pickedSwatch.style.background = hslString(result.picked);
     this.scoreDisplay.style.display    = 'flex';
     this.scoreNumber.textContent = String(result.score);
@@ -174,8 +176,9 @@ export class UI {
     this.wheelCanvas.style.display  = 'none';
     this.actionBtn.style.display    = 'none';
     this.finalScreen.style.display  = 'flex';
+    this.historyWrap.style.display  = '';
     this.finalGrade.classList.remove('pop');
-    void this.finalGrade.offsetWidth; // force reflow to re-trigger animation
+    void this.finalGrade.offsetWidth;
     this.finalGrade.classList.add('pop');
     this.finalGrade.textContent = grade;
     this.finalAvg.textContent   = `${avg} / 100`;
@@ -184,6 +187,40 @@ export class UI {
       ? tr.newRecord
       : `${tr.best}: ${best}`;
     this.finalBest.classList.toggle('record', isNewRecord);
+  }
+
+  showTAFinalScreen(grade: string, rounds: number, avg: number, isNew: boolean, bestRounds: number): void {
+    this.infoBar.style.display      = 'none';
+    this.swatchPanel.style.display  = 'none';
+    this.scoreDisplay.style.display = 'none';
+    this.wheelCanvas.style.display  = 'none';
+    this.actionBtn.style.display    = 'none';
+    this.finalScreen.style.display  = 'flex';
+    this.historyWrap.style.display  = 'none';
+    this.finalGrade.classList.remove('pop');
+    void this.finalGrade.offsetWidth;
+    this.finalGrade.classList.add('pop');
+    this.finalGrade.textContent = grade;
+    const tr = t(this.lang);
+    this.finalScoreLbl.textContent = tr.taScore;
+    this.finalAvg.textContent      = tr.taRounds(rounds);
+    this.finalBest.textContent     = isNew ? tr.newRecord : `${tr.best}: ${tr.taRounds(bestRounds)}`;
+    this.finalBest.classList.toggle('record', isNew);
+    this.finalStreak.textContent   = avg > 0 ? `avg ${avg}` : '';
+  }
+
+  updateTAInfo(seconds: number, rounds: number): void {
+    this.roundLabel.textContent = `⏱ ${seconds}s`;
+    this.avgScore.textContent   = t(this.lang).taRounds(rounds);
+  }
+
+  setTABtn(active: boolean): void {
+    this.taBtn.textContent = t(this.lang).timeAttack;
+    this.taBtn.classList.toggle('ta-active', active);
+  }
+
+  onTAToggle(handler: () => void): void {
+    this.taBtn.addEventListener('click', handler);
   }
 
   // ── Theme, language & difficulty ────────────────────────────────────────
@@ -235,9 +272,9 @@ export class UI {
     this.renderRoundInfo();
     const isDiff = this.diffBtn.dataset.diff as 'easy' | 'hard' | undefined;
     if (isDiff) this.setDiff(isDiff);
-    // re-render daily button with new lang
     this.dailyBtn.textContent = this.dailyBtn.classList.contains('daily-active')
       ? t(lang).dailyDone : t(lang).daily;
+    this.taBtn.textContent = t(lang).timeAttack;
   }
 
   setDailyBtn(done: boolean): void {

@@ -94,8 +94,10 @@ main.fading { opacity: 0; }
   border-color: var(--border-hover);
 }
 
-.ctrl-btn.diff-hard {
+.ctrl-btn.diff-hard,
+.ctrl-btn.ta-active {
   border-color: var(--border-hover);
+  font-weight: 600;
 }
 
 /* ── Título ──────────────────────────────────────────────────────────────── */
@@ -518,6 +520,9 @@ body.light .daily-card {
 .final-palette {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 280px;
 }
 
 .palette-swatch {

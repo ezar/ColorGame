@@ -51,6 +51,24 @@ export function saveDailyRecord(r: DailyRecord): void {
   localStorage.setItem(KEY_DAILY, JSON.stringify(r));
 }
 
+// ── Time Attack best ──────────────────────────────────────────────────────
+const KEY_TA = 'colormatch_ta';
+export interface TABest { rounds: number; avg: number; }
+
+export function getTABest(): TABest | null {
+  try   { return JSON.parse(localStorage.getItem(KEY_TA) ?? 'null'); }
+  catch { return null; }
+}
+
+export function saveTABest(r: TABest): boolean {
+  const prev = getTABest();
+  if (!prev || r.rounds > prev.rounds || (r.rounds === prev.rounds && r.avg > prev.avg)) {
+    localStorage.setItem(KEY_TA, JSON.stringify(r));
+    return true;
+  }
+  return false;
+}
+
 // ── Streak ────────────────────────────────────────────────────────────────
 interface StreakData { lastDate: string; count: number; }
 

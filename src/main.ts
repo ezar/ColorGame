@@ -3,11 +3,12 @@ import { ColorWheel } from './wheel';
 import { Game } from './game';
 import { UI } from './ui';
 import { type Lang, t } from './i18n';
-import { getHighscore, saveHighscore, pushHistory, getDailyRecord, saveDailyRecord, getStreak, updateStreak } from './storage';
+import { getHighscore, saveHighscore, pushHistory, getDailyRecord, saveDailyRecord, getStreak, updateStreak, getTABest, saveTABest } from './storage';
 import { playConfirm, playScoreHigh, playScoreLow, playPerfect, isMuted, toggleMute } from './audio';
 import { launchConfetti, burstSparkles } from './confetti';
 import { maybeShowTutorial } from './tutorial';
 import { getDailyTargets, getTodayKey, getDayNumber, buildDailyShareText } from './daily';
+import { calcGrade } from './color';
 
 const GRADE_COLORS: Record<string, string> = {
   S: '#f59e0b', A: '#4ade80', B: '#38bdf8', C: '#fb923c', D: '#f87171', F: '#ef4444',
@@ -39,12 +40,23 @@ let game          = new Game({ totalRounds: 5 });
 const ROUND_DURATION  = 10_000;
 const HIDE_DELAY      = 3_000;
 const FADE_DURATION   = 150;
+const TA_SECS         = 60;
+const TA_NEXT_DELAY   = 1_200;
 const mainEl          = document.querySelector('main')!;
 
 let hideTimer:  ReturnType<typeof setTimeout> | null = null;
 let roundTimer: ReturnType<typeof setTimeout> | null = null;
 let roundStart  = 0;
 let roundTimes: number[] = [];
+
+// ── Time-attack state ─────────────────────────────────────────────────────
+let isTA            = false;
+let taSecondsLeft   = TA_SECS;
+let taInterval:     ReturnType<typeof setInterval> | null = null;
+let taNextTimer:    ReturnType<typeof setTimeout>  | null = null;
+let taResults:      import('./types').RoundResult[] = [];
+let lastModeTA      = false;
+let finalShareText  = '';
 
 // ── Timer helpers ─────────────────────────────────────────────────────────
 
@@ -63,16 +75,21 @@ function avgRoundTime(): number {
 
 function beginRound(): void {
   clearTimers();
-  const avg = game.roundResults.length > 0 ? game.averageScore : undefined;
   wheel.setLightness(game.currentTarget.l);
   ui.showRound();
   ui.setTargetColor(game.currentTarget);
-  ui.updateRoundInfo(game.currentRound, game.totalRounds, avg,
-    isDailyMode ? t(lang).dayN(getDayNumber()) : undefined);
-
   roundStart = Date.now();
-  ui.startRoundTimer(ROUND_DURATION);
-  roundTimer = setTimeout(confirmPick, ROUND_DURATION);
+
+  if (isTA) {
+    ui.updateTAInfo(taSecondsLeft, taResults.length);
+    roundTimer = setTimeout(confirmPick, ROUND_DURATION);
+  } else {
+    const avg = game.roundResults.length > 0 ? game.averageScore : undefined;
+    ui.updateRoundInfo(game.currentRound, game.totalRounds, avg,
+      isDailyMode ? t(lang).dayN(getDayNumber()) : undefined);
+    ui.startRoundTimer(ROUND_DURATION);
+    roundTimer = setTimeout(confirmPick, ROUND_DURATION);
+  }
 
   if (diff === 'hard') {
     ui.startTimerBar(HIDE_DELAY);
@@ -87,7 +104,7 @@ function confirmPick(): void {
   const result = game.confirmPick(wheel.getColor());
   wheel.lock();
   playConfirm();
-  ui.showRoundScore(result, game.isLastRound());
+  ui.showRoundScore(result, game.isLastRound(), isTA);
   if (result.score === 100) {
     playPerfect();
     navigator.vibrate?.([40, 30, 40, 30, 80]);
@@ -99,7 +116,13 @@ function confirmPick(): void {
   } else {
     navigator.vibrate?.(30);
   }
-  ui.updateRoundInfo(game.currentRound, game.totalRounds, game.averageScore);
+  if (isTA) {
+    taResults.push(result);
+    ui.updateTAInfo(taSecondsLeft, taResults.length);
+    taNextTimer = setTimeout(taAdvanceRound, TA_NEXT_DELAY);
+  } else {
+    ui.updateRoundInfo(game.currentRound, game.totalRounds, game.averageScore);
+  }
 }
 
 function handleAction(): void {
@@ -109,6 +132,11 @@ function handleAction(): void {
   }
 
   if (game.currentPhase === 'scored') {
+    if (isTA) {
+      if (taNextTimer) { clearTimeout(taNextTimer); taNextTimer = null; }
+      taAdvanceRound();
+      return;
+    }
     if (game.isLastRound()) {
       game.advance();
       const avg      = game.averageScore;
@@ -122,8 +150,8 @@ function handleAction(): void {
       if (isNewRec) launchConfetti();
 
       if (isDailyMode) {
-        const today   = getTodayKey();
-        const streak  = updateStreak(today);
+        const today     = getTodayKey();
+        const streak    = updateStreak(today);
         const shareText = buildDailyShareText(grade, avg, game.roundResults, lang);
         saveDailyRecord({
           date: today, grade, avg, shareText,
@@ -131,8 +159,10 @@ function handleAction(): void {
         });
         ui.showStreak(streak);
         ui.setDailyBtn(true);
+        finalShareText = shareText;
       } else {
         ui.showStreak(getStreak());
+        finalShareText = `${t(lang).shareText(grade, avg, avgRoundTime())}\nhttps://ezar.github.io/ColorGame/`;
       }
     } else {
       game.advance();
@@ -148,6 +178,7 @@ function handleAction(): void {
 
 function restart(daily = false): void {
   clearTimers();
+  lastModeTA  = false;
   roundTimes  = [];
   isDailyMode = daily;
   game = daily
@@ -156,6 +187,65 @@ function restart(daily = false): void {
   game.startRound();
   wheel.reset();
   beginRound();
+}
+
+// ── Time-attack flow ──────────────────────────────────────────────────────
+
+function startTimeAttack(): void {
+  clearTimers();
+  if (taInterval)  { clearInterval(taInterval);  taInterval  = null; }
+  if (taNextTimer) { clearTimeout(taNextTimer);  taNextTimer = null; }
+  isTA        = true;
+  isDailyMode = false;
+  lastModeTA  = true;
+  taSecondsLeft = TA_SECS;
+  taResults     = [];
+  roundTimes    = [];
+  game = new Game({ totalRounds: 999 });
+  game.startRound();
+  wheel.reset();
+  ui.setTABtn(true);
+  ui.startRoundTimer(TA_SECS * 1000);
+  beginRound();
+  taInterval = setInterval(tickTA, 1000);
+}
+
+function tickTA(): void {
+  taSecondsLeft--;
+  ui.updateTAInfo(taSecondsLeft, taResults.length);
+  if (taSecondsLeft <= 0) endTimeAttack();
+}
+
+function taAdvanceRound(): void {
+  taNextTimer = null;
+  if (!isTA) return;
+  game.advance();
+  game.startRound();
+  wheel.reset();
+  mainEl.classList.add('fading');
+  setTimeout(() => {
+    if (!isTA) return;
+    beginRound();
+    mainEl.classList.remove('fading');
+  }, FADE_DURATION);
+}
+
+function endTimeAttack(): void {
+  if (taInterval)  { clearInterval(taInterval);  taInterval  = null; }
+  if (taNextTimer) { clearTimeout(taNextTimer);  taNextTimer = null; }
+  clearTimers();
+  isTA = false;
+  const rounds = taResults.length;
+  const avg    = rounds > 0
+    ? Math.round(taResults.reduce((s, r) => s + r.score, 0) / rounds) : 0;
+  const grade  = calcGrade(avg);
+  const isNew  = rounds > 0 && saveTABest({ rounds, avg });
+  const best   = getTABest();
+  finalShareText = `${t(lang).taShare(grade, rounds, avg)}\nhttps://ezar.github.io/ColorGame/`;
+  ui.showTAFinalScreen(grade, rounds, avg, isNew, best?.rounds ?? rounds);
+  ui.showFinalPalette(taResults);
+  ui.setTABtn(false);
+  if (isNew) launchConfetti();
 }
 
 // ── Theme, language, sound & difficulty ───────────────────────────────────
@@ -176,8 +266,10 @@ ui.onLangToggle(() => {
 ui.onDiffToggle(() => {
   diff = diff === 'easy' ? 'hard' : 'easy';
   ui.setDiff(diff);
-  restart(isDailyMode);
+  if (lastModeTA) startTimeAttack(); else restart(isDailyMode);
 });
+
+ui.onTAToggle(startTimeAttack);
 
 ui.onDailyToggle(() => {
   const rec = getDailyRecord();
@@ -229,16 +321,10 @@ function showDailyResult(rec: ReturnType<typeof getDailyRecord> & {}): void {
 
 wheel.onColorChange(color => ui.setPickedColor(color));
 ui.onAction(handleAction);
-ui.onRestart(restart);
+ui.onRestart(() => { if (lastModeTA) startTimeAttack(); else restart(); });
 ui.onShare(() => {
-  const text = isDailyMode
-    ? buildDailyShareText(game.finalGrade, game.averageScore, game.roundResults, lang)
-    : `${t(lang).shareText(game.finalGrade, game.averageScore, avgRoundTime())}\nhttps://ezar.github.io/ColorGame/`;
-  if (navigator.share) {
-    navigator.share({ text }).catch(() => {});
-  } else {
-    navigator.clipboard.writeText(text).then(() => alert('Copied!')).catch(() => {});
-  }
+  if (navigator.share) navigator.share({ text: finalShareText }).catch(() => {});
+  else navigator.clipboard.writeText(finalShareText).then(() => alert('Copied!')).catch(() => {});
 });
 
 ui.setDiff(diff);
