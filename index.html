@@ -14,13 +14,10 @@
 <body>
 
   <div class="top-bar">
-    <button class="ctrl-btn" id="soundBtn">🔊</button>
-    <button class="ctrl-btn" id="themeBtn">☽</button>
-    <button class="ctrl-btn" id="langBtn">ES</button>
-    <button class="ctrl-btn" id="diffBtn">EASY</button>
     <button class="ctrl-btn" id="dailyBtn">DAILY</button>
     <button class="ctrl-btn" id="taBtn">TIME</button>
     <button class="ctrl-btn" id="achBtn">🏆</button>
+    <button class="ctrl-btn" id="settingsBtn">⚙</button>
   </div>
 
   <main>
@@ -117,6 +114,32 @@
       <div class="tutorial-title" id="achTitle">Achievements</div>
       <div class="ach-grid" id="achGrid"></div>
       <button class="btn" id="achCloseBtn">Close</button>
+    </div>
+  </div>
+
+  <!-- Settings overlay -->
+  <div id="settingsOverlay" class="tutorial-overlay" hidden>
+    <div class="tutorial-card settings-card">
+      <div class="tutorial-title" id="settingsTitle">Settings</div>
+      <div class="settings-rows">
+        <div class="settings-row">
+          <span class="settings-label" id="settingSoundLbl">Sound</span>
+          <button class="ctrl-btn" id="soundBtn">🔊</button>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label" id="settingThemeLbl">Theme</span>
+          <button class="ctrl-btn" id="themeBtn">☽</button>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label" id="settingLangLbl">Language</span>
+          <button class="ctrl-btn" id="langBtn">ES</button>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label" id="settingDiffLbl">Difficulty</span>
+          <button class="ctrl-btn" id="diffBtn">EASY</button>
+        </div>
+      </div>
+      <button class="btn" id="settingsCloseBtn">Close</button>
     </div>
   </div>
 

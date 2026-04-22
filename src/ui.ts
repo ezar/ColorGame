@@ -32,6 +32,7 @@ export class UI {
   private readonly historyLabel  = el('historyLabel');
   private readonly finalPalette  = el('finalPalette');
   private readonly wheelCanvas   = el<HTMLCanvasElement>('wheelCanvas');
+  private readonly settingsBtn   = el<HTMLButtonElement>('settingsBtn');
   private readonly soundBtn      = el<HTMLButtonElement>('soundBtn');
   private readonly themeBtn      = el<HTMLButtonElement>('themeBtn');
   private readonly langBtn       = el<HTMLButtonElement>('langBtn');
@@ -343,7 +344,8 @@ export class UI {
     this.dailyBtn.textContent = this.dailyBtn.classList.contains('daily-active')
       ? t(lang).dailyDone : t(lang).daily;
     this.taBtn.textContent = t(lang).timeAttack;
-    if (!el('achOverlay').hidden) this.showAchOverlay();
+    if (!el('achOverlay').hidden)      this.showAchOverlay();
+    if (!el('settingsOverlay').hidden) this.showSettings();
   }
 
   setDailyBtn(done: boolean): void {
@@ -382,6 +384,28 @@ export class UI {
 
   setSoundBtn(muted: boolean): void {
     this.soundBtn.textContent = muted ? '🔇' : '🔊';
+  }
+
+  showSettings(): void {
+    const tr = t(this.lang);
+    el('settingsTitle').textContent   = tr.settings;
+    el('settingSoundLbl').textContent = tr.sound;
+    el('settingThemeLbl').textContent = tr.theme;
+    el('settingLangLbl').textContent  = tr.language;
+    el('settingDiffLbl').textContent  = tr.difficulty;
+    el('settingsCloseBtn').textContent = tr.close;
+    const overlay = el('settingsOverlay');
+    overlay.hidden = false;
+    el('settingsCloseBtn').onclick = () => { overlay.hidden = true; };
+    overlay.onclick = (e: MouseEvent) => { if (e.target === overlay) overlay.hidden = true; };
+  }
+
+  closeSettings(): void {
+    el('settingsOverlay').hidden = true;
+  }
+
+  onSettingsToggle(handler: () => void): void {
+    this.settingsBtn.addEventListener('click', handler);
   }
 
   onSoundToggle(handler: () => void): void {

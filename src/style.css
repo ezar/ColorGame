@@ -571,6 +571,37 @@ body.light .daily-card {
   height: 100% !important;
 }
 
+/* ── Settings overlay ────────────────────────────────────────────────────── */
+.settings-card {
+  min-width: 240px;
+  width: calc(100% - 80px);
+  max-width: 300px;
+}
+
+.settings-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-row:last-child { border-bottom: none; }
+
+.settings-label {
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
 /* ── Achievements overlay ────────────────────────────────────────────────── */
 .ach-card-overlay {
   max-width: 360px;

@@ -183,6 +183,7 @@ function handleAction(): void {
 }
 
 function restart(daily = false): void {
+  ui.closeSettings();
   clearTimers();
   lastModeTA  = false;
   roundTimes  = [];
@@ -215,6 +216,7 @@ function notifyAch(newOnes: Achievement[]): void {
 // ── Time-attack flow ──────────────────────────────────────────────────────
 
 function startTimeAttack(): void {
+  ui.closeSettings();
   clearTimers();
   if (taInterval)  { clearInterval(taInterval);  taInterval  = null; }
   if (taNextTimer) { clearTimeout(taNextTimer);  taNextTimer = null; }
@@ -352,6 +354,7 @@ ui.onShare(() => {
   else navigator.clipboard.writeText(finalShareText).then(() => alert('Copied!')).catch(() => {});
 });
 
+ui.onSettingsToggle(() => ui.showSettings());
 ui.onAchToggle(() => ui.showAchOverlay());
 ui.refreshAchBtn();
 
