@@ -353,6 +353,7 @@ ui.onShare(() => {
 });
 
 ui.onAchToggle(() => ui.showAchOverlay());
+ui.refreshAchBtn();
 
 ui.setDiff(diff);
 ui.setDailyBtn(getDailyRecord()?.date === getTodayKey());

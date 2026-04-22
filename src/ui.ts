@@ -184,8 +184,10 @@ export class UI {
     this.finalGrade.classList.remove('pop');
     void this.finalGrade.offsetWidth;
     this.finalGrade.classList.add('pop');
-    this.finalGrade.textContent = grade;
-    this.finalAvg.textContent   = `${avg} / 100`;
+    this.finalGrade.textContent     = grade;
+    this.finalAvg.textContent       = `${avg} / 100`;
+    this.finalStreak.textContent    = '';
+    this.finalScoreLbl.textContent  = t(this.lang).finalScore;
     const tr = t(this.lang);
     this.finalBest.textContent = isNewRecord
       ? tr.newRecord
@@ -237,13 +239,15 @@ export class UI {
       const card = document.createElement('div');
       const isUnlocked = unlocked.has(a.id);
       card.className = 'ach-item' + (isUnlocked ? ' unlocked' : '');
+      const desc = this.lang === 'es' ? a.descEs : a.descEn;
       card.innerHTML = `<div class="ach-item-emoji">${a.emoji}</div>`
         + `<div class="ach-item-name">${this.lang === 'es' ? a.nameEs : a.nameEn}</div>`
-        + (isUnlocked ? `<div class="ach-item-desc">${this.lang === 'es' ? a.descEs : a.descEn}</div>` : '');
+        + `<div class="ach-item-desc">${desc}</div>`;
       grid.appendChild(card);
     });
-    el('achTitle').textContent = t(this.lang).achTitle;
+    el('achTitle').textContent    = t(this.lang).achTitle;
     el('achCloseBtn').textContent = t(this.lang).close;
+    this.updateAchBtn(unlocked.size);
     el('achOverlay').hidden = false;
     el('achCloseBtn').onclick = () => { el('achOverlay').hidden = true; };
     el('achOverlay').onclick = (e: MouseEvent) => { if (e.target === el('achOverlay')) el('achOverlay').hidden = true; };
@@ -253,7 +257,17 @@ export class UI {
     this.achBtn.addEventListener('click', handler);
   }
 
+  refreshAchBtn(): void {
+    const n = getUnlocked().size;
+    this.achBtn.textContent = n > 0 ? `🏆 ${n}` : '🏆';
+  }
+
+  private updateAchBtn(count: number): void {
+    this.achBtn.textContent = count > 0 ? `🏆 ${count}` : '🏆';
+  }
+
   showAchToast(achievement: Achievement): void {
+    this.updateAchBtn(getUnlocked().size);
     const label = t(this.lang).achUnlocked;
     const name  = this.lang === 'es' ? achievement.nameEs : achievement.nameEn;
     this.toastQueue.push({ emoji: achievement.emoji, name, label });
