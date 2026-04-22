@@ -34,6 +34,8 @@ export interface Translations {
   taRounds:       (n: number) => string;
   taScore:        string;
   taShare:        (grade: string, rounds: number, avg: number) => string;
+  achTitle:       string;
+  achUnlocked:    string;
 }
 
 const translations: Record<Lang, Translations> = {
@@ -71,6 +73,8 @@ const translations: Record<Lang, Translations> = {
     taRounds:     n => `${n} rondas`,
     taScore:      'Contrarreloj',
     taShare:      (g, r, a) => `Hice ${r} rondas en 60s en Color Match ⏱ Nota ${g}, media ${a}/100 ¿Puedes superarlo?`,
+    achTitle:     'Logros',
+    achUnlocked:  '¡Logro desbloqueado!',
   },
   en: {
     round:        (c, total) => `Round ${c} of ${total}`,
@@ -106,6 +110,8 @@ const translations: Record<Lang, Translations> = {
     taRounds:     n => `${n} rounds`,
     taScore:      'Time attack',
     taShare:      (g, r, a) => `I played ${r} rounds in 60s on Color Match ⏱ Grade ${g}, avg ${a}/100. Can you beat it?`,
+    achTitle:     'Achievements',
+    achUnlocked:  'Achievement unlocked!',
   },
 };
 

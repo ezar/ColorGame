@@ -3,7 +3,8 @@ import { ColorWheel } from './wheel';
 import { Game } from './game';
 import { UI } from './ui';
 import { type Lang, t } from './i18n';
-import { getHighscore, saveHighscore, pushHistory, getDailyRecord, saveDailyRecord, getStreak, updateStreak, getTABest, saveTABest } from './storage';
+import { getHighscore, saveHighscore, pushHistory, getDailyRecord, saveDailyRecord, getStreak, updateStreak, getTABest, saveTABest, getPerfectCount, incrementPerfect, getGamesPlayed, incrementGames, getDailyCount, incrementDaily } from './storage';
+import { checkAchievements, type Achievement } from './achievements';
 import { playConfirm, playScoreHigh, playScoreLow, playPerfect, isMuted, toggleMute } from './audio';
 import { launchConfetti, burstSparkles } from './confetti';
 import { maybeShowTutorial } from './tutorial';
@@ -109,6 +110,8 @@ function confirmPick(): void {
     playPerfect();
     navigator.vibrate?.([40, 30, 40, 30, 80]);
     burstSparkles(document.getElementById('scoreNumber')!);
+    incrementPerfect();
+    notifyAch(checkAchievements(buildAchCtx()));
   } else if (result.score >= 80) {
     playScoreHigh(); navigator.vibrate?.([30, 60, 60]);
   } else if (result.score < 40) {
@@ -144,6 +147,7 @@ function handleAction(): void {
       const isNewRec = saveHighscore(avg);
       const best     = getHighscore() ?? avg;
       const history  = pushHistory(avg);
+      incrementGames();
       ui.showFinalScreen(grade, avg, best, isNewRec);
       ui.showFinalPalette(game.roundResults);
       ui.showHistory(history);
@@ -157,6 +161,7 @@ function handleAction(): void {
           date: today, grade, avg, shareText,
           results: game.roundResults.map(r => ({ h: r.target.h, s: r.target.s, l: r.target.l, score: r.score })),
         });
+        incrementDaily();
         ui.showStreak(streak);
         ui.setDailyBtn(true);
         finalShareText = shareText;
@@ -164,6 +169,7 @@ function handleAction(): void {
         ui.showStreak(getStreak());
         finalShareText = `${t(lang).shareText(grade, avg, avgRoundTime())}\nhttps://ezar.github.io/ColorGame/`;
       }
+      notifyAch(checkAchievements(buildAchCtx()));
     } else {
       game.advance();
       wheel.reset();
@@ -187,6 +193,23 @@ function restart(daily = false): void {
   game.startRound();
   wheel.reset();
   beginRound();
+}
+
+// ── Achievements ─────────────────────────────────────────────────────────
+
+function buildAchCtx() {
+  return {
+    gamesPlayed:  getGamesPlayed(),
+    perfectCount: getPerfectCount(),
+    bestAvg:      getHighscore(),
+    streak:       getStreak(),
+    dailyCount:   getDailyCount(),
+    taBestRounds: getTABest()?.rounds ?? 0,
+  };
+}
+
+function notifyAch(newOnes: Achievement[]): void {
+  newOnes.forEach(a => ui.showAchToast(a));
 }
 
 // ── Time-attack flow ──────────────────────────────────────────────────────
@@ -242,10 +265,12 @@ function endTimeAttack(): void {
   const isNew  = rounds > 0 && saveTABest({ rounds, avg });
   const best   = getTABest();
   finalShareText = `${t(lang).taShare(grade, rounds, avg)}\nhttps://ezar.github.io/ColorGame/`;
+  incrementGames();
   ui.showTAFinalScreen(grade, rounds, avg, isNew, best?.rounds ?? rounds);
   ui.showFinalPalette(taResults);
   ui.setTABtn(false);
   if (isNew) launchConfetti();
+  notifyAch(checkAchievements(buildAchCtx()));
 }
 
 // ── Theme, language, sound & difficulty ───────────────────────────────────
@@ -326,6 +351,8 @@ ui.onShare(() => {
   if (navigator.share) navigator.share({ text: finalShareText }).catch(() => {});
   else navigator.clipboard.writeText(finalShareText).then(() => alert('Copied!')).catch(() => {});
 });
+
+ui.onAchToggle(() => ui.showAchOverlay());
 
 ui.setDiff(diff);
 ui.setDailyBtn(getDailyRecord()?.date === getTodayKey());

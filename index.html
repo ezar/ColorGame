@@ -20,6 +20,7 @@
     <button class="ctrl-btn" id="diffBtn">EASY</button>
     <button class="ctrl-btn" id="dailyBtn">DAILY</button>
     <button class="ctrl-btn" id="taBtn">TIME</button>
+    <button class="ctrl-btn" id="achBtn">🏆</button>
   </div>
 
   <main>
@@ -107,6 +108,24 @@
         <li id="tut3">Confirm before the timer runs out</li>
       </ol>
       <button class="btn primary" id="tutBtn">Got it</button>
+    </div>
+  </div>
+
+  <!-- Achievement overlay -->
+  <div id="achOverlay" class="tutorial-overlay" hidden>
+    <div class="tutorial-card ach-card-overlay">
+      <div class="tutorial-title" id="achTitle">Achievements</div>
+      <div class="ach-grid" id="achGrid"></div>
+      <button class="btn" id="achCloseBtn">Close</button>
+    </div>
+  </div>
+
+  <!-- Achievement toast -->
+  <div id="achToast" class="ach-toast" hidden>
+    <span id="achToastEmoji" class="ach-toast-emoji"></span>
+    <div>
+      <div class="ach-toast-label" id="achToastLabel">Achievement unlocked!</div>
+      <div class="ach-toast-name" id="achToastName"></div>
     </div>
   </div>
 

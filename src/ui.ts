@@ -2,6 +2,7 @@ import type { HslColor, RoundResult } from './types';
 import { hslString } from './color';
 import { type Lang, t } from './i18n';
 import { nearestColorName } from './colornames';
+import { ACHIEVEMENTS, getUnlocked, type Achievement } from './achievements';
 
 function el<T extends HTMLElement>(id: string): T {
   const elem = document.getElementById(id);
@@ -37,7 +38,10 @@ export class UI {
   private readonly diffBtn       = el<HTMLButtonElement>('diffBtn');
   private readonly dailyBtn      = el<HTMLButtonElement>('dailyBtn');
   private readonly taBtn         = el<HTMLButtonElement>('taBtn');
+  private readonly achBtn        = el<HTMLButtonElement>('achBtn');
   private readonly historyWrap   = el('historyWrap');
+  private toastQueue: Array<{ emoji: string; name: string; label: string }> = [];
+  private toastRunning = false;
   private readonly finalStreak   = el('finalStreak');
   private readonly hideCountdown   = el('hideCountdown');
   private readonly roundTimerFill  = el('roundTimerFill');
@@ -223,6 +227,56 @@ export class UI {
     this.taBtn.addEventListener('click', handler);
   }
 
+  // ── Achievements ─────────────────────────────────────────────────────────
+
+  showAchOverlay(): void {
+    const unlocked = getUnlocked();
+    const grid = el('achGrid');
+    grid.innerHTML = '';
+    ACHIEVEMENTS.forEach(a => {
+      const card = document.createElement('div');
+      const isUnlocked = unlocked.has(a.id);
+      card.className = 'ach-item' + (isUnlocked ? ' unlocked' : '');
+      card.innerHTML = `<div class="ach-item-emoji">${a.emoji}</div>`
+        + `<div class="ach-item-name">${this.lang === 'es' ? a.nameEs : a.nameEn}</div>`
+        + (isUnlocked ? `<div class="ach-item-desc">${this.lang === 'es' ? a.descEs : a.descEn}</div>` : '');
+      grid.appendChild(card);
+    });
+    el('achTitle').textContent = t(this.lang).achTitle;
+    el('achCloseBtn').textContent = t(this.lang).close;
+    el('achOverlay').hidden = false;
+    el('achCloseBtn').onclick = () => { el('achOverlay').hidden = true; };
+    el('achOverlay').onclick = (e: MouseEvent) => { if (e.target === el('achOverlay')) el('achOverlay').hidden = true; };
+  }
+
+  onAchToggle(handler: () => void): void {
+    this.achBtn.addEventListener('click', handler);
+  }
+
+  showAchToast(achievement: Achievement): void {
+    const label = t(this.lang).achUnlocked;
+    const name  = this.lang === 'es' ? achievement.nameEs : achievement.nameEn;
+    this.toastQueue.push({ emoji: achievement.emoji, name, label });
+    if (!this.toastRunning) this.runToast();
+  }
+
+  private runToast(): void {
+    if (this.toastQueue.length === 0) { this.toastRunning = false; return; }
+    this.toastRunning = true;
+    const { emoji, name, label } = this.toastQueue.shift()!;
+    const toast = el('achToast');
+    el('achToastEmoji').textContent = emoji;
+    el('achToastName').textContent  = name;
+    el('achToastLabel').textContent = label;
+    toast.hidden = false;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.hidden = true;
+      toast.classList.remove('show');
+      setTimeout(() => this.runToast(), 300);
+    }, 3000);
+  }
+
   // ── Theme, language & difficulty ────────────────────────────────────────
 
   setTheme(theme: 'dark' | 'light'): void {
@@ -275,6 +329,7 @@ export class UI {
     this.dailyBtn.textContent = this.dailyBtn.classList.contains('daily-active')
       ? t(lang).dailyDone : t(lang).daily;
     this.taBtn.textContent = t(lang).timeAttack;
+    if (!el('achOverlay').hidden) this.showAchOverlay();
   }
 
   setDailyBtn(done: boolean): void {

@@ -1,9 +1,12 @@
-const KEY_BEST     = 'colormatch_best';
-const KEY_HISTORY  = 'colormatch_history';
-const KEY_TUTORIAL = 'colormatch_tutorial_done';
-const KEY_DAILY    = 'colormatch_daily';
-const KEY_STREAK   = 'colormatch_streak';
-const MAX_HISTORY  = 10;
+const KEY_BEST        = 'colormatch_best';
+const KEY_HISTORY     = 'colormatch_history';
+const KEY_TUTORIAL    = 'colormatch_tutorial_done';
+const KEY_DAILY       = 'colormatch_daily';
+const KEY_STREAK      = 'colormatch_streak';
+const KEY_PERFECT     = 'colormatch_perfect';
+const KEY_GAMES       = 'colormatch_games';
+const KEY_DAILY_COUNT = 'colormatch_daily_count';
+const MAX_HISTORY     = 10;
 
 // ── Highscore ─────────────────────────────────────────────────────────────
 export function getHighscore(): number | null {
@@ -50,6 +53,25 @@ export function getDailyRecord(): DailyRecord | null {
 export function saveDailyRecord(r: DailyRecord): void {
   localStorage.setItem(KEY_DAILY, JSON.stringify(r));
 }
+
+// ── Counters for achievements ─────────────────────────────────────────────
+function counter(key: string): { get: () => number; inc: () => number } {
+  return {
+    get: ()  => Number(localStorage.getItem(key) ?? '0'),
+    inc: ()  => { const n = Number(localStorage.getItem(key) ?? '0') + 1; localStorage.setItem(key, String(n)); return n; },
+  };
+}
+
+const _perfect = counter(KEY_PERFECT);
+const _games   = counter(KEY_GAMES);
+const _daily   = counter(KEY_DAILY_COUNT);
+
+export const getPerfectCount  = _perfect.get;
+export const incrementPerfect = _perfect.inc;
+export const getGamesPlayed   = _games.get;
+export const incrementGames   = _games.inc;
+export const getDailyCount    = _daily.get;
+export const incrementDaily   = _daily.inc;
 
 // ── Time Attack best ──────────────────────────────────────────────────────
 const KEY_TA = 'colormatch_ta';
