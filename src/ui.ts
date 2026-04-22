@@ -1,4 +1,13 @@
 import type { HslColor, RoundResult } from './types';
+
+export interface StatsData {
+  gamesPlayed:  number;
+  perfectCount: number;
+  dailyCount:   number;
+  gradeCounts:  Record<string, number>;
+  streak:       number;
+  taBest:       { rounds: number; avg: number } | null;
+}
 import { hslString } from './color';
 import { type Lang, t } from './i18n';
 import { nearestColorName } from './colornames';
@@ -40,6 +49,7 @@ export class UI {
   private readonly dailyBtn      = el<HTMLButtonElement>('dailyBtn');
   private readonly taBtn         = el<HTMLButtonElement>('taBtn');
   private readonly achBtn        = el<HTMLButtonElement>('achBtn');
+  private readonly statsBtn      = el<HTMLButtonElement>('statsBtn');
   private readonly historyWrap   = el('historyWrap');
   private toastQueue: Array<{ emoji: string; name: string; label: string }> = [];
   private toastRunning = false;
@@ -56,6 +66,7 @@ export class UI {
 
   private lang: Lang = 'en';
   private actionState: ActionState = 'confirm';
+  private lastStatsData: StatsData | null = null;
   private roundInfo = { round: 0, total: 0, avg: undefined as number | undefined, dayLabel: undefined as string | undefined };
 
   // ── Color ───────────────────────────────────────────────────────────────
@@ -258,6 +269,65 @@ export class UI {
     this.achBtn.addEventListener('click', handler);
   }
 
+  // ── Stats ─────────────────────────────────────────────────────────────────
+
+  showStats(data: StatsData): void {
+    this.lastStatsData = data;
+    const tr = t(this.lang);
+    const GRADES = ['S', 'A', 'B', 'C', 'D', 'F'];
+    const GRADE_COLORS: Record<string, string> = {
+      S: '#f59e0b', A: '#4ade80', B: '#38bdf8', C: '#fb923c', D: '#f87171', F: '#ef4444',
+    };
+
+    el('statsTitle').textContent      = tr.statsTitle;
+    el('statsGamesVal').textContent   = String(data.gamesPlayed);
+    el('statsGamesLbl').textContent   = tr.statsGames;
+    el('statsPerfectVal').textContent = String(data.perfectCount);
+    el('statsPerfectLbl').textContent = tr.statsPerfect;
+    el('statsDailyVal').textContent   = String(data.dailyCount);
+    el('statsDailyLbl').textContent   = tr.statsDaily;
+    el('statsGradesLbl').textContent  = tr.statsGrades;
+
+    const total = GRADES.reduce((s, g) => s + (data.gradeCounts[g] ?? 0), 0);
+    const bars  = el('gradeBars');
+    bars.innerHTML = '';
+    const fills: HTMLElement[] = [];
+    GRADES.forEach(g => {
+      const count = data.gradeCounts[g] ?? 0;
+      const pct   = total > 0 ? Math.round((count / total) * 100) : 0;
+      const row   = document.createElement('div');
+      row.className = 'grade-bar-row';
+      const fill = document.createElement('div');
+      fill.className = 'grade-bar-fill';
+      fill.style.background = GRADE_COLORS[g];
+      fill.style.width = '0%';
+      const track = document.createElement('div');
+      track.className = 'grade-bar-track';
+      track.appendChild(fill);
+      row.innerHTML = `<span class="grade-bar-letter" style="color:${GRADE_COLORS[g]}">${g}</span>`;
+      row.appendChild(track);
+      row.insertAdjacentHTML('beforeend', `<span class="grade-bar-count">${count}</span>`);
+      bars.appendChild(row);
+      fills.push(fill);
+      setTimeout(() => { fill.style.width = `${pct}%`; }, 50);
+    });
+
+    el('statsStreakLbl').textContent = tr.statsStreak;
+    el('statsStreakVal').textContent = data.streak > 0 ? tr.streak(data.streak) : '—';
+    el('statsTALbl').textContent    = tr.statsTABest;
+    el('statsTAVal').textContent    = data.taBest ? tr.taRounds(data.taBest.rounds) : '—';
+    el('statsCloseBtn').textContent = tr.close;
+
+    const overlay = el('statsOverlay');
+    overlay.hidden = false;
+    el('statsCloseBtn').onclick = () => { overlay.hidden = true; };
+    overlay.onclick = (e: MouseEvent) => { if (e.target === overlay) overlay.hidden = true; };
+  }
+
+  onStatsToggle(handler: () => void): void {
+    this.statsBtn.addEventListener('click', handler);
+  }
+
   refreshAchBtn(): void {
     const n = getUnlocked().size;
     this.achBtn.textContent = n > 0 ? `🏆 ${n}` : '🏆';
@@ -346,6 +416,7 @@ export class UI {
     this.taBtn.textContent = t(lang).timeAttack;
     if (!el('achOverlay').hidden)      this.showAchOverlay();
     if (!el('settingsOverlay').hidden) this.showSettings();
+    if (!el('statsOverlay').hidden && this.lastStatsData) this.showStats(this.lastStatsData);
   }
 
   setDailyBtn(done: boolean): void {

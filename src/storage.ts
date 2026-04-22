@@ -6,6 +6,20 @@ const KEY_STREAK      = 'colormatch_streak';
 const KEY_PERFECT     = 'colormatch_perfect';
 const KEY_GAMES       = 'colormatch_games';
 const KEY_DAILY_COUNT = 'colormatch_daily_count';
+const KEY_GRADES      = 'colormatch_grade_counts';
+
+export type GradeCounts = Record<string, number>;
+
+export function getGradeCounts(): GradeCounts {
+  try   { return JSON.parse(localStorage.getItem(KEY_GRADES) ?? '{}'); }
+  catch { return {}; }
+}
+
+export function incrementGrade(grade: string): void {
+  const counts = getGradeCounts();
+  counts[grade] = (counts[grade] ?? 0) + 1;
+  localStorage.setItem(KEY_GRADES, JSON.stringify(counts));
+}
 const MAX_HISTORY     = 10;
 
 // ── Highscore ─────────────────────────────────────────────────────────────

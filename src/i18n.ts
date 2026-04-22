@@ -41,6 +41,15 @@ export interface Translations {
   theme:          string;
   language:       string;
   difficulty:     string;
+  statsTitle:     string;
+  statsGames:     string;
+  statsPerfect:   string;
+  statsDaily:     string;
+  statsGrades:    string;
+  statsStreak:    string;
+  statsTABest:    string;
+  tut4:           string;
+  tut5:           string;
 }
 
 const translations: Record<Lang, Translations> = {
@@ -85,6 +94,15 @@ const translations: Record<Lang, Translations> = {
     theme:        'Tema',
     language:     'Idioma',
     difficulty:   'Dificultad',
+    statsTitle:   'Estadísticas',
+    statsGames:   'Partidas',
+    statsPerfect: 'Perfectas',
+    statsDaily:   'Diarias',
+    statsGrades:  'Notas',
+    statsStreak:  'Mejor racha',
+    statsTABest:  'Mejor contrarreloj',
+    tut4:         'Prueba el modo DIARIO o TIEMPO en la barra superior',
+    tut5:         'Desbloquea logros 🏆 completando retos',
   },
   en: {
     round:        (c, total) => `Round ${c} of ${total}`,
@@ -127,6 +145,15 @@ const translations: Record<Lang, Translations> = {
     theme:        'Theme',
     language:     'Language',
     difficulty:   'Difficulty',
+    statsTitle:   'Stats',
+    statsGames:   'Games',
+    statsPerfect: 'Perfect',
+    statsDaily:   'Daily',
+    statsGrades:  'Grades',
+    statsStreak:  'Best streak',
+    statsTABest:  'TA best',
+    tut4:         'Try DAILY or TIME modes in the top bar',
+    tut5:         'Unlock achievements 🏆 by completing challenges',
   },
 };
 

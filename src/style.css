@@ -652,6 +652,117 @@ body.light .daily-card {
   opacity: 0.7;
 }
 
+/* ── Stats overlay ───────────────────────────────────────────────────────── */
+.stats-card {
+  min-width: 260px;
+  width: calc(100% - 48px);
+  max-width: 320px;
+}
+
+.stats-nums {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  padding: 4px 0;
+}
+
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.stats-section-label {
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  align-self: flex-start;
+}
+
+.grade-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.grade-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.grade-bar-letter {
+  font-size: 0.75rem;
+  font-weight: 700;
+  width: 14px;
+  text-align: center;
+}
+
+.grade-bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--bar-bg);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.grade-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+.grade-bar-count {
+  font-size: 0.65rem;
+  color: var(--fg-dim);
+  width: 20px;
+  text-align: right;
+}
+
+.stats-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.stats-footer-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stats-footer-label {
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.stats-footer-val {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
 /* ── Achievement toast ───────────────────────────────────────────────────── */
 .ach-toast {
   position: fixed;

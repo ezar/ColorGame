@@ -16,6 +16,7 @@
   <div class="top-bar">
     <button class="ctrl-btn" id="dailyBtn">DAILY</button>
     <button class="ctrl-btn" id="taBtn">TIME</button>
+    <button class="ctrl-btn" id="statsBtn">📊</button>
     <button class="ctrl-btn" id="achBtn">🏆</button>
     <button class="ctrl-btn" id="settingsBtn">⚙</button>
   </div>
@@ -103,6 +104,8 @@
         <li id="tut1">Tap the wheel to pick a color</li>
         <li id="tut2">Match the target color as closely as you can</li>
         <li id="tut3">Confirm before the timer runs out</li>
+        <li id="tut4">Try DAILY or TIME modes in the top bar</li>
+        <li id="tut5">Unlock achievements 🏆 by completing challenges</li>
       </ol>
       <button class="btn primary" id="tutBtn">Got it</button>
     </div>
@@ -140,6 +143,40 @@
         </div>
       </div>
       <button class="btn" id="settingsCloseBtn">Close</button>
+    </div>
+  </div>
+
+  <!-- Stats overlay -->
+  <div id="statsOverlay" class="tutorial-overlay" hidden>
+    <div class="tutorial-card stats-card">
+      <div class="tutorial-title" id="statsTitle">Stats</div>
+      <div class="stats-nums">
+        <div class="stat-block">
+          <div class="stat-value" id="statsGamesVal">0</div>
+          <div class="stat-label" id="statsGamesLbl">Games</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-value" id="statsPerfectVal">0</div>
+          <div class="stat-label" id="statsPerfectLbl">Perfect</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-value" id="statsDailyVal">0</div>
+          <div class="stat-label" id="statsDailyLbl">Daily</div>
+        </div>
+      </div>
+      <div class="stats-section-label" id="statsGradesLbl">Grades</div>
+      <div class="grade-bars" id="gradeBars"></div>
+      <div class="stats-footer">
+        <div class="stats-footer-item">
+          <span class="stats-footer-label" id="statsStreakLbl">Best streak</span>
+          <span class="stats-footer-val" id="statsStreakVal">—</span>
+        </div>
+        <div class="stats-footer-item">
+          <span class="stats-footer-label" id="statsTALbl">TA best</span>
+          <span class="stats-footer-val" id="statsTAVal">—</span>
+        </div>
+      </div>
+      <button class="btn" id="statsCloseBtn">Close</button>
     </div>
   </div>
 

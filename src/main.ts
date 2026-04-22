@@ -3,8 +3,9 @@ import { ColorWheel } from './wheel';
 import { Game } from './game';
 import { UI } from './ui';
 import { type Lang, t } from './i18n';
-import { getHighscore, saveHighscore, pushHistory, getDailyRecord, saveDailyRecord, getStreak, updateStreak, getTABest, saveTABest, getPerfectCount, incrementPerfect, getGamesPlayed, incrementGames, getDailyCount, incrementDaily } from './storage';
+import { getHighscore, saveHighscore, pushHistory, getDailyRecord, saveDailyRecord, getStreak, updateStreak, getTABest, saveTABest, getPerfectCount, incrementPerfect, getGamesPlayed, incrementGames, getDailyCount, incrementDaily, getGradeCounts, incrementGrade } from './storage';
 import { checkAchievements, type Achievement } from './achievements';
+import { type StatsData } from './ui';
 import { playConfirm, playScoreHigh, playScoreLow, playPerfect, isMuted, toggleMute } from './audio';
 import { launchConfetti, burstSparkles } from './confetti';
 import { maybeShowTutorial } from './tutorial';
@@ -148,6 +149,7 @@ function handleAction(): void {
       const best     = getHighscore() ?? avg;
       const history  = pushHistory(avg);
       incrementGames();
+      incrementGrade(grade);
       ui.showFinalScreen(grade, avg, best, isNewRec);
       ui.showFinalPalette(game.roundResults);
       ui.showHistory(history);
@@ -268,6 +270,7 @@ function endTimeAttack(): void {
   const best   = getTABest();
   finalShareText = `${t(lang).taShare(grade, rounds, avg)}\nhttps://ezar.github.io/ColorGame/`;
   incrementGames();
+  incrementGrade(grade);
   ui.showTAFinalScreen(grade, rounds, avg, isNew, best?.rounds ?? rounds);
   ui.showFinalPalette(taResults);
   ui.setTABtn(false);
@@ -356,6 +359,17 @@ ui.onShare(() => {
 
 ui.onSettingsToggle(() => ui.showSettings());
 ui.onAchToggle(() => ui.showAchOverlay());
+ui.onStatsToggle(() => {
+  const data: StatsData = {
+    gamesPlayed:  getGamesPlayed(),
+    perfectCount: getPerfectCount(),
+    dailyCount:   getDailyCount(),
+    gradeCounts:  getGradeCounts(),
+    streak:       getStreak(),
+    taBest:       getTABest(),
+  };
+  ui.showStats(data);
+});
 ui.refreshAchBtn();
 
 ui.setDiff(diff);
