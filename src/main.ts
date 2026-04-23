@@ -186,10 +186,14 @@ function handleAction(): void {
 
 function restart(daily = false): void {
   ui.closeSettings();
+  if (taInterval)  { clearInterval(taInterval);  taInterval  = null; }
+  if (taNextTimer) { clearTimeout(taNextTimer);  taNextTimer = null; }
+  isTA        = false;
   clearTimers();
   lastModeTA  = false;
   roundTimes  = [];
   isDailyMode = daily;
+  ui.setTABtn(false);
   game = daily
     ? new Game({ totalRounds: 5, targets: getDailyTargets() })
     : new Game({ totalRounds: 5 });
@@ -299,7 +303,7 @@ ui.onDiffToggle(() => {
   if (lastModeTA) startTimeAttack(); else restart(isDailyMode);
 });
 
-ui.onTAToggle(startTimeAttack);
+ui.onTAToggle(() => { if (isTA) restart(false); else startTimeAttack(); });
 
 ui.onDailyToggle(() => {
   const rec = getDailyRecord();
